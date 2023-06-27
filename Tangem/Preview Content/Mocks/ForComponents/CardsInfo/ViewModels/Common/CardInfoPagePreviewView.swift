@@ -18,7 +18,7 @@ struct CardInfoPagePreviewView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 0.0) {
-                scrollViewConnector.placeholderView
+//                scrollViewConnector.placeholderView
 
                 Spacer(minLength: Constants.spacerHeight)
 
