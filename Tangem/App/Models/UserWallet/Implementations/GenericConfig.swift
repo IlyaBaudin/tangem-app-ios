@@ -177,9 +177,9 @@ extension GenericConfig: UserWalletConfig {
 
     func makeAnyWalletManagerFacrory() throws -> AnyWalletManagerFactory {
         if hasFeature(.hdWallets) {
-            return HDWalletManagerFactory()
+            return HDWalletManagerFactory(addressTypesConfig: MultiAddressesTypesConfig())
         } else {
-            return SimpleWalletManagerFactory()
+            return SimpleWalletManagerFactory(addressTypesConfig: MultiAddressesTypesConfig())
         }
     }
 }

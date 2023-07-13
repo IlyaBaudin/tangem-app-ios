@@ -215,7 +215,7 @@ extension LegacyConfig: UserWalletConfig {
     }
 
     func makeAnyWalletManagerFacrory() throws -> AnyWalletManagerFactory {
-        return SimpleWalletManagerFactory()
+        return SimpleWalletManagerFactory(addressTypesConfig: MultiAddressesTypesConfig())
     }
 }
 

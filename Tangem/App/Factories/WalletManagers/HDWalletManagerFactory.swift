@@ -11,6 +11,12 @@ import TangemSdk
 import BlockchainSdk
 
 struct HDWalletManagerFactory: AnyWalletManagerFactory {
+    private let addressTypesConfig: AddressTypesConfig
+
+    init(addressTypesConfig: AddressTypesConfig) {
+        self.addressTypesConfig = addressTypesConfig
+    }
+
     func makeWalletManager(for token: StorageEntry, keys: [CardDTO.Wallet]) throws -> WalletManager {
         let seedKeys: [EllipticCurve: Data] = keys.reduce(into: [:]) { partialResult, cardWallet in
             partialResult[cardWallet.curve] = cardWallet.publicKey
@@ -20,7 +26,8 @@ struct HDWalletManagerFactory: AnyWalletManagerFactory {
             partialResult[cardWallet.curve] = cardWallet.derivedKeys
         }
 
-        let curve = token.blockchainNetwork.blockchain.curve
+        let blockchain = token.blockchainNetwork.blockchain
+        let curve = blockchain.curve
 
         guard let derivationPath = token.blockchainNetwork.derivationPath else {
             throw AnyWalletManagerFactoryError.entryHasNotDerivationPath
@@ -33,13 +40,12 @@ struct HDWalletManagerFactory: AnyWalletManagerFactory {
         }
 
         let factory = WalletManagerFactoryProvider().factory
+        let addressTypes = addressTypesConfig.addressTypes(for: blockchain)
+        let publicKey = Wallet.PublicKey(seedKey: seedKey, derivation: .init(path: derivationPath, derivedKey: derivedKey))
 
-        let walletManager = try factory.makeWalletManager(
-            blockchain: token.blockchainNetwork.blockchain,
-            seedKey: seedKey,
-            derivedKey: derivedKey,
-            derivation: .custom(derivationPath)
-        )
+        // One publicKey for all address types
+        let publicKeys: [AddressType: Wallet.PublicKey] = addressTypes.reduce(into: [:]) { $0[$1] = publicKey }
+        let walletManager = try factory.makeWalletManager(blockchain: blockchain, publicKeys: publicKeys)
 
         walletManager.addTokens(token.tokens)
         return walletManager

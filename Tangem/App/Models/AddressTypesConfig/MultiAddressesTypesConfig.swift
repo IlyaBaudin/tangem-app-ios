@@ -18,44 +18,41 @@ struct MultiAddressesTypesConfig: AddressTypesConfig {
             return [.default, .legacy]
         case .bitcoinCash:
             return [.default, .legacy]
-        case .cardano(let shelley):
-            guard shelley else {
-                return [.default]
-            }
+        case .cardano:
             return [.default, .legacy]
         case .stellar,
-                .solana,
-                .ethereum,
-                .ethereumPoW,
-                .ethereumFair,
-                .saltPay,
-                .ethereumClassic,
-                .rsk,
-                .binance,
-                .xrp,
-                .ducatus,
-                .tezos,
-                .dogecoin,
-                .bsc,
-                .polygon,
-                .avalanche,
-                .fantom,
-                .polkadot,
-                .kusama,
-                .azero,
-                .tron,
-                .arbitrum,
-                .dash,
-                .gnosis,
-                .optimism,
-                .ton,
-                .kava,
-                .kaspa,
-                .ravencoin,
-                .cosmos,
-                .terraV1, .terraV2,
-                .cronos,
-                .telos:
+             .solana,
+             .ethereum,
+             .ethereumPoW,
+             .ethereumFair,
+             .saltPay,
+             .ethereumClassic,
+             .rsk,
+             .binance,
+             .xrp,
+             .ducatus,
+             .tezos,
+             .dogecoin,
+             .bsc,
+             .polygon,
+             .avalanche,
+             .fantom,
+             .polkadot,
+             .kusama,
+             .azero,
+             .tron,
+             .arbitrum,
+             .dash,
+             .gnosis,
+             .optimism,
+             .ton,
+             .kava,
+             .kaspa,
+             .ravencoin,
+             .cosmos,
+             .terraV1, .terraV2,
+             .cronos,
+             .telos:
             return [.default]
         }
     }

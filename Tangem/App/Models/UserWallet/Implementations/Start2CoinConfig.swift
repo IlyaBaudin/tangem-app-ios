@@ -156,7 +156,7 @@ extension Start2CoinConfig: UserWalletConfig {
     }
 
     func makeAnyWalletManagerFacrory() throws -> AnyWalletManagerFactory {
-        return SimpleWalletManagerFactory()
+        return SimpleWalletManagerFactory(addressTypesConfig: MultiAddressesTypesConfig())
     }
 }
 
