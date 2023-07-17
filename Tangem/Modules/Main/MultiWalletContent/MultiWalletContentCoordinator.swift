@@ -1,5 +1,5 @@
 //
-//  MainCoordinator.swift
+//  MultiWalletContentCoordinator.swift
 //  Tangem
 //
 //  Created by Andrew Son on 27/06/23.
@@ -9,13 +9,13 @@
 import Foundation
 import Combine
 
-class MainCoordinator: CoordinatorObject {
+class MultiWalletContentCoordinator: CoordinatorObject {
     let dismissAction: Action
     let popToRootAction: ParamsAction<PopToRootOptions>
 
     // MARK: - Root view model
 
-    @Published private(set) var mainViewModel: MainViewModel?
+    @Published private(set) var rootViewModel: MultiWalletContentViewModel?
 
     // MARK: - Child coordinators
 
@@ -30,18 +30,16 @@ class MainCoordinator: CoordinatorObject {
     }
 
     func start(with options: Options) {
-        mainViewModel = MainViewModel(coordinator: self, userWalletRepository: FakeUserWalletRepository())
+        rootViewModel = .init(coordinator: self)
     }
 }
 
 // MARK: - Options
 
-extension MainCoordinator {
-    struct Options {
-        let cardViewModel: CardViewModel
-    }
+extension MultiWalletContentCoordinator {
+    struct Options {}
 }
 
-// MARK: - MainRoutable
+// MARK: - MultiWalletContentRoutable
 
-extension MainCoordinator: MainRoutable {}
+extension MultiWalletContentCoordinator: MultiWalletContentRoutable {}

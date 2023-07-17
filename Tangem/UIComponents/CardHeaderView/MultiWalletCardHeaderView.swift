@@ -30,17 +30,19 @@ struct MultiWalletCardHeaderView: View {
                         .style(Fonts.Bold.title1, color: Colors.Text.primary1)
                         .frame(height: 34)
 
-                    HStack(spacing: 6) {
-                        Text(viewModel.numberOfCards)
-
-                        if viewModel.isWalletImported {
-                            Text("•")
-
-                            Text(Localization.commonSeedPhrase)
-                        }
-                    }
-                    .style(Fonts.Regular.caption2, color: Colors.Text.disabled)
-                    .fixedSize()
+                    Text(viewModel.subtitleAttributedString)
+//                        .showSensitiveInformation(viewModel)
+//                    HStack(spacing: 6) {
+//                        Text(viewModel.numberOfCards)
+//
+//                        if viewModel.isWalletImported {
+//                            Text("•")
+//
+//                            Text(Localization.commonSeedPhrase)
+//                        }
+//                    }
+                        .style(Fonts.Regular.caption2, color: Colors.Text.disabled)
+                        .fixedSize()
                 }
                 .lineLimit(1)
                 .frame(width: leadingContentWidth(containerWidth: proxy.size.width), alignment: .leading)

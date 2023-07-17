@@ -23,6 +23,7 @@ class CardViewModel: Identifiable, ObservableObject {
 
     @Published private(set) var currentSecurityOption: SecurityModeOption = .longTap
     @Published private(set) var accessCodeRecoveryEnabled: Bool
+    @Published private var cardName: String = ""
 
     var signer: TangemSigner { _signer }
 
@@ -323,6 +324,7 @@ class CardViewModel: Identifiable, ObservableObject {
 
         _signer = config.tangemSigner
         accessCodeRecoveryEnabled = cardInfo.card.userSettings.isUserCodeRecoveryAllowed
+        cardName = userWallet.name
         updateCurrentSecurityOption()
         appendPersistentBlockchains()
         bind()
@@ -701,6 +703,7 @@ extension CardViewModel: UserWalletModel {
 
     func updateWalletName(_ name: String) {
         cardInfo.name = name
+        cardName = name
     }
 
     func updateWalletModels() {
@@ -746,6 +749,18 @@ extension CardViewModel: UserWalletModel {
             break
         }
     }
+}
+
+extension CardViewModel: MultiWalletCardHeaderInfoProvider {
+    var cardNamePublisher: AnyPublisher<String, Never> { $cardName.eraseToAnyPublisher() }
+
+    var numberOfCardsPublisher: AnyPublisher<Int, Never> { .just(output: config.cardsCount) }
+
+    var isWalletImported: Bool {
+        cardInfo.card.wallets.contains(where: { $0.isImported ?? false })
+    }
+
+    var cardImage: ImageType? { config.cardImage }
 }
 
 // MARK: - Wallet models Operations

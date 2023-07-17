@@ -48,6 +48,8 @@ protocol UserWalletConfig: OnboardingStepsBuilderFactory, BackupServiceFactory, 
 
     var productType: Analytics.ProductType { get }
 
+    var cardImage: ImageType? { get }
+
     func getFeatureAvailability(_ feature: UserWalletFeature) -> UserWalletFeature.Availability
 
     func makeWalletModel(for token: StorageEntry) throws -> WalletModel
@@ -73,6 +75,10 @@ extension UserWalletConfig {
 
     var canSkipBackup: Bool {
         true
+    }
+
+    var cardImage: ImageType? {
+        return nil
     }
 }
 

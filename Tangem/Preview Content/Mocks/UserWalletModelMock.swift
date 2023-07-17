@@ -19,8 +19,16 @@ class UserWalletModelMock: UserWalletModel {
     var userTokenListManager: UserTokenListManager { UserTokenListManagerMock() }
 
     var userWallet: UserWallet {
-        UserWallet(userWalletId: Data(), name: "", card: .init(card: .card), associatedCardIds: [], walletData: .none, artwork: nil, isHDWalletAllowed: false)
+        UserWallet(userWalletId: Data(), name: "", card: .init(card: .walletWithBackup), associatedCardIds: [], walletData: .none, artwork: nil, isHDWalletAllowed: false)
     }
+
+    var cardNamePublisher: AnyPublisher<String, Never> { .just(output: "") }
+
+    var numberOfCardsPublisher: AnyPublisher<Int, Never> { .just(output: 1) }
+
+    var isWalletImported: Bool { false }
+
+    var cardImage: ImageType? { nil }
 
     var totalBalanceProvider: TotalBalanceProviding { TotalBalanceProviderMock() }
 

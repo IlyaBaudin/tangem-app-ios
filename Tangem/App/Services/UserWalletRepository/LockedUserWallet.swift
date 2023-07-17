@@ -14,9 +14,13 @@ class LockedUserWallet: UserWalletModel {
     private(set) var userWallet: UserWallet
 
     private let config: UserWalletConfig
+    private let cardNameSubject: CurrentValueSubject<String, Never>
+
+    private var bag = Set<AnyCancellable>()
 
     init(with userWallet: UserWallet) {
         self.userWallet = userWallet
+        cardNameSubject = .init(userWallet.name)
         config = UserWalletConfigFactory(userWallet.cardInfo()).makeConfig()
     }
 
@@ -55,6 +59,14 @@ class LockedUserWallet: UserWalletModel {
     func updateWalletModels() {}
 
     func updateAndReloadWalletModels(silent: Bool, completion: @escaping () -> Void) {}
+
+    private func bind() {
+        cardNameSubject
+            .sink { [weak self] newName in
+                self?.userWallet.name = newName
+            }
+            .store(in: &bag)
+    }
 }
 
 extension LockedUserWallet {
@@ -76,5 +88,24 @@ extension LockedUserWallet {
         func totalBalancePublisher() -> AnyPublisher<LoadingValue<TotalBalanceProvider.TotalBalance>, Never> {
             Empty().eraseToAnyPublisher()
         }
+    }
+}
+
+extension LockedUserWallet: MultiWalletCardHeaderInfoProvider {
+    var cardNamePublisher: AnyPublisher<String, Never> {
+        cardNameSubject.eraseToAnyPublisher()
+    }
+
+    var numberOfCardsPublisher: AnyPublisher<Int, Never> {
+        .just(output: config.cardsCount)
+            .eraseToAnyPublisher()
+    }
+
+    var isWalletImported: Bool {
+        false
+    }
+
+    var cardImage: ImageType? {
+        config.cardImage
     }
 }

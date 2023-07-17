@@ -9,6 +9,10 @@
 import Foundation
 import Combine
 
+protocol CardHeaderSubtitleProvider: AnyObject {
+    var subtitlePublisher: AnyPublisher<String, Never> { get }
+}
+
 protocol MultiWalletCardHeaderInfoProvider: AnyObject {
     var cardNamePublisher: AnyPublisher<String, Never> { get }
     var numberOfCardsPublisher: AnyPublisher<Int, Never> { get }
