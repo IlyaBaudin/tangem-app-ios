@@ -29,9 +29,7 @@ class MainCoordinator: CoordinatorObject {
         self.popToRootAction = popToRootAction
     }
 
-    func start(with options: Options) {
-
-    }
+    func start(with options: Options) {}
 }
 
 // MARK: - Options

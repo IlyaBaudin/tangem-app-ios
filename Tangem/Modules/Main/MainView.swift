@@ -93,8 +93,8 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
         self.isMultiWallet = isMultiWallet
         self.userWalletId = userWalletId
         self.walletModels = walletModels
-        self.userTokenListManager = CommonUserTokenListManager(hasTokenSynchronization: false, userWalletId: userWalletId.value)
-        self.totalBalanceProvider = TotalBalanceProviderMock()
+        userTokenListManager = CommonUserTokenListManager(hasTokenSynchronization: false, userWalletId: userWalletId.value)
+        totalBalanceProvider = TotalBalanceProviderMock()
         self.userWallet = userWallet
     }
 
@@ -118,33 +118,19 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
         true
     }
 
-    func update(entries: [StorageEntry]) {
+    func update(entries: [StorageEntry]) {}
 
-    }
+    func append(entries: [StorageEntry]) {}
 
-    func append(entries: [StorageEntry]) {
+    func remove(amountType: Amount.AmountType, blockchainNetwork: BlockchainNetwork) {}
 
-    }
+    func initialUpdate() {}
 
-    func remove(amountType: Amount.AmountType, blockchainNetwork: BlockchainNetwork) {
+    func updateWalletName(_ name: String) {}
 
-    }
+    func updateWalletModels() {}
 
-    func initialUpdate() {
-
-    }
-
-    func updateWalletName(_ name: String) {
-
-    }
-
-    func updateWalletModels() {
-
-    }
-
-    func updateAndReloadWalletModels(silent: Bool, completion: @escaping () -> Void) {
-
-    }
+    func updateAndReloadWalletModels(silent: Bool, completion: @escaping () -> Void) {}
 }
 
 class FakeUserWalletRepo: UserWalletRepository {
@@ -154,7 +140,7 @@ class FakeUserWalletRepo: UserWalletRepository {
 
     var selectedUserWalletId: Data?
 
-    var isEmpty: Bool { models.contains(where: { $0.walletModels.isEmpty })}
+    var isEmpty: Bool { models.contains(where: { $0.walletModels.isEmpty }) }
 
     var count: Int { models.count }
 
@@ -166,53 +152,31 @@ class FakeUserWalletRepo: UserWalletRepository {
 
     private let eventSubject = PassthroughSubject<UserWalletRepositoryEvent, Never>()
 
-    init() { }
+    init() {}
 
-    func unlock(with method: UserWalletRepositoryUnlockMethod, completion: @escaping (UserWalletRepositoryResult?) -> Void) {
+    func unlock(with method: UserWalletRepositoryUnlockMethod, completion: @escaping (UserWalletRepositoryResult?) -> Void) {}
 
-    }
+    func setSelectedUserWalletId(_ userWalletId: Data?, reason: UserWalletRepositorySelectionChangeReason) {}
 
-    func setSelectedUserWalletId(_ userWalletId: Data?, reason: UserWalletRepositorySelectionChangeReason) {
+    func updateSelection() {}
 
-    }
+    func logoutIfNeeded() {}
 
-    func updateSelection() {
+    func add(_ completion: @escaping (UserWalletRepositoryResult?) -> Void) {}
 
-    }
-
-    func logoutIfNeeded() {
-
-    }
-
-    func add(_ completion: @escaping (UserWalletRepositoryResult?) -> Void) {
-
-    }
-
-    func save(_ cardViewModel: CardViewModel) {
-
-    }
+    func save(_ cardViewModel: CardViewModel) {}
 
     func contains(_ userWallet: UserWallet) -> Bool {
         false
     }
 
-    func save(_ userWallet: UserWallet) {
+    func save(_ userWallet: UserWallet) {}
 
-    }
+    func delete(_ userWallet: UserWallet, logoutIfNeeded shouldAutoLogout: Bool) {}
 
-    func delete(_ userWallet: UserWallet, logoutIfNeeded shouldAutoLogout: Bool) {
+    func clear() {}
 
-    }
-
-    func clear() {
-
-    }
-
-    func initialize() {
-
-    }
-
-
+    func initialize() {}
 }
 
 struct MainView_Preview: PreviewProvider {

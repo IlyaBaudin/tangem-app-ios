@@ -46,7 +46,5 @@ final class MainViewModel: ObservableObject {
 
     func openDetails() {}
 
-    private func bind() {
-
-    }
+    private func bind() {}
 }
