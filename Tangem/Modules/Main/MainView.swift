@@ -43,7 +43,6 @@ struct CardsPagerContent<Content: View>: View {
     }
 }
 
-
 struct MainView: View {
     @ObservedObject var viewModel: MainViewModel
 

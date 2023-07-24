@@ -11,6 +11,7 @@ import Foundation
 protocol MainPageContentFactory {
     func createPages(from models: [UserWalletModel]) -> [CardMainPageBuilder]
 }
+
 struct CommonMainPageContentFactory: MainPageContentFactory {
     func createPages(from models: [UserWalletModel]) -> [CardMainPageBuilder] {
         return models.map {
@@ -22,7 +23,7 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
                 let header = MultiWalletCardHeaderViewModel(
                     cardInfoProvider: $0,
                     cardSubtitleProvider: MultiWalletCardHeaderSubtitleProvider(userWalletModel: $0),
-                    balanceProvider: $0.totalBalanceProvider
+                    balanceProvider: $0
                 )
 
                 return .multiWallet(
@@ -36,8 +37,8 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
             coordinator.start(with: .init())
             let header = MultiWalletCardHeaderViewModel(
                 cardInfoProvider: $0,
-                cardSubtitleProvider: SingleWalletCardHeaderSubtitleProvider(userWalletModel: $0, walletModel: $0.walletModels.first),
-                balanceProvider: $0.totalBalanceProvider
+                cardSubtitleProvider: SingleWalletCardHeaderSubtitleProvider(userWalletModel: $0, walletModel: $0.walletModelsManager.walletModels.first),
+                balanceProvider: $0
             )
             return .singleWallet(
                 id: id,

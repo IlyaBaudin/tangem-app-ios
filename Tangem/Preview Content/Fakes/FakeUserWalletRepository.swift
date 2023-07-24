@@ -17,7 +17,7 @@ class FakeUserWalletRepository: UserWalletRepository {
 
     var selectedUserWalletId: Data?
 
-    var isEmpty: Bool { models.contains(where: { $0.walletModels.isEmpty }) }
+    var isEmpty: Bool { models.isEmpty }
 
     var count: Int { models.count }
 
@@ -36,13 +36,15 @@ class FakeUserWalletRepository: UserWalletRepository {
                 isMultiWallet: true,
                 userWalletId: .init(with: Data.randomData(count: 32)),
                 walletModels: [
-                    .init(
+                    WalletModel(
                         walletManager: FakeWalletManager(wallet: .ethereumWalletStub),
-                        derivationStyle: .v3
+                        amountType: .coin,
+                        isCustom: false
                     ),
-                    .init(
-                        walletManager: FakeWalletManager(wallet: .btcWalletStub),
-                        derivationStyle: .v3
+                    WalletModel(
+                        walletManager: FakeWalletManager(wallet: .ethereumWalletStub),
+                        amountType: .token(value: .sushiMock),
+                        isCustom: false
                     ),
                 ],
                 userWallet: UserWalletStubs.walletV2Stub
@@ -52,9 +54,10 @@ class FakeUserWalletRepository: UserWalletRepository {
                 isMultiWallet: false,
                 userWalletId: .init(with: Data.randomData(count: 32)),
                 walletModels: [
-                    .init(
+                    WalletModel(
                         walletManager: FakeWalletManager(wallet: .btcWalletStub),
-                        derivationStyle: .v1
+                        amountType: .coin,
+                        isCustom: false
                     ),
                 ],
                 userWallet: UserWalletStubs.twinStub

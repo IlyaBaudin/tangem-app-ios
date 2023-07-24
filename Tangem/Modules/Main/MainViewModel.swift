@@ -45,26 +45,27 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
     }
 
     private func bind() {
-        stateUpdateSubscription = walletModel?.$state
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] newState in
-                if self?.userWalletModel.userWallet.isLocked ?? false {
-                    return
-                }
-//                if case .idle = newState {
-                guard let walletModel = self?.walletModel else {
-                    return
-                }
-
-                let balance = walletModel.getBalance(for: .coin)
-                self?.subject.send(balance.isEmpty ? BalanceFormatter.defaultEmptyBalanceString : balance)
+//        stateUpdateSubscription = walletModel?.$state
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveValue: { [weak self] newState in
+//                if self?.userWalletModel.userWallet.isLocked ?? false {
+//                    return
 //                }
-            })
+        ////                if case .idle = newState {
+//                guard let walletModel = self?.walletModel else {
+//                    return
+//                }
+//
+//                let balance = walletModel.getBalance(for: .coin)
+//                self?.subject.send(balance.isEmpty ? BalanceFormatter.defaultEmptyBalanceString : balance)
+        ////                }
+//            })
     }
 }
 
 final class MainViewModel: ObservableObject {
     // MARK: - ViewState
+
     @Published var pages: [CardMainPageBuilder] = []
     @Published var cardsIndicies = [0, 1, 2]
     @Published var selectedCardIndex = 0

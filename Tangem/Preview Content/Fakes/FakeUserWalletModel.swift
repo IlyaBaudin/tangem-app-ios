@@ -13,12 +13,15 @@ import BlockchainSdk
 class FakeUserWalletModel: UserWalletModel, ObservableObject {
     @Published var cardName: String
 
-    var isMultiWallet: Bool
-    var userWalletId: UserWalletId
-    @Published var walletModels: [WalletModel]
-    var userTokenListManager: UserTokenListManager
-    var totalBalanceProvider: TotalBalanceProviding
-    var userWallet: UserWallet
+    let walletModelsManager: WalletModelsManager
+    let userTokenListManager: UserTokenListManager
+    let totalBalanceProvider: TotalBalanceProviding
+
+    let userWallet: UserWallet
+    let isMultiWallet: Bool
+    let userWalletId: UserWalletId
+
+    var tokensCount: Int? { walletModelsManager.walletModels.filter { !$0.isMainToken }.count }
 
     internal init(
         cardName: String,
@@ -30,45 +33,19 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
         self.cardName = cardName
         self.isMultiWallet = isMultiWallet
         self.userWalletId = userWalletId
-        self.walletModels = walletModels
-        userTokenListManager = CommonUserTokenListManager(hasTokenSynchronization: false, userWalletId: userWalletId.value)
+        walletModelsManager = WalletModelsManagerMock()
+        userTokenListManager = CommonUserTokenListManager(hasTokenSynchronization: false, userWalletId: userWalletId.value, hdWalletsSupported: true)
         totalBalanceProvider = TotalBalanceProviderMock()
         self.userWallet = userWallet
     }
-
-    func subscribeToWalletModels() -> AnyPublisher<[WalletModel], Never> {
-        $walletModels.eraseToAnyPublisher()
-    }
-
-    func getSavedEntries() -> [StorageEntry] {
-        []
-    }
-
-    func getEntriesWithoutDerivation() -> [StorageEntry] {
-        []
-    }
-
-    func subscribeToEntriesWithoutDerivation() -> AnyPublisher<[StorageEntry], Never> {
-        .just(output: [])
-    }
-
-    func canManage(amountType: Amount.AmountType, blockchainNetwork: BlockchainNetwork) -> Bool {
-        true
-    }
-
-    func update(entries: [StorageEntry]) {}
-
-    func append(entries: [StorageEntry]) {}
-
-    func remove(amountType: Amount.AmountType, blockchainNetwork: BlockchainNetwork) {}
 
     func initialUpdate() {}
 
     func updateWalletName(_ name: String) {}
 
-    func updateWalletModels() {}
-
-    func updateAndReloadWalletModels(silent: Bool, completion: @escaping () -> Void) {}
+    func totalBalancePublisher() -> AnyPublisher<LoadingValue<TotalBalanceProvider.TotalBalance>, Never> {
+        return .just(output: .loading)
+    }
 }
 
 extension FakeUserWalletModel: MultiWalletCardHeaderInfoProvider {

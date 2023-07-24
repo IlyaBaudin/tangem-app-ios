@@ -11,6 +11,8 @@ import Combine
 import BlockchainSdk
 
 class LockedUserWallet: UserWalletModel {
+    let walletModelsManager: WalletModelsManager = WalletModelsManagerMock()
+
     var tokensCount: Int? { nil }
 
     var isMultiWallet: Bool { config.hasFeature(.multiCurrency) }
@@ -39,6 +41,10 @@ class LockedUserWallet: UserWalletModel {
     func updateWalletModels() {}
 
     func updateAndReloadWalletModels(silent: Bool, completion: @escaping () -> Void) {}
+
+    func totalBalancePublisher() -> AnyPublisher<LoadingValue<TotalBalanceProvider.TotalBalance>, Never> {
+        .just(output: .loaded(.init(balance: 0, currencyCode: "", hasError: false)))
+    }
 
     private func bind() {
         cardNameSubject

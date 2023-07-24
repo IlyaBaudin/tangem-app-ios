@@ -9,11 +9,12 @@
 import BlockchainSdk
 import Combine
 
-protocol UserWalletModel: MultiWalletCardHeaderInfoProvider, AnyObject {
+protocol UserWalletModel: MultiWalletCardHeaderInfoProvider, TotalBalanceProviding, AnyObject {
     var isMultiWallet: Bool { get }
     var tokensCount: Int? { get }
     var userWalletId: UserWalletId { get }
     var userWallet: UserWallet { get }
+    var walletModelsManager: WalletModelsManager { get }
 
     func initialUpdate()
     func updateWalletName(_ name: String)

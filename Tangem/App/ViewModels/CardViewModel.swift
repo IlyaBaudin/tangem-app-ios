@@ -596,21 +596,6 @@ extension CardViewModel: MultiWalletCardHeaderInfoProvider {
     var cardImage: ImageType? { config.cardImage }
 }
 
-// MARK: - Wallet models Operations
-
-private extension CardViewModel {
-    func removeBlockchain(_ network: BlockchainNetwork) {
-        userTokenListManager.update(.removeBlockchain(network))
-        walletListManager.updateWalletModels()
-    }
-
-    func removeToken(_ token: Token, in network: BlockchainNetwork) {
-        userTokenListManager.update(.removeToken(token, in: network))
-        walletListManager.removeToken(token, blockchainNetwork: network)
-        walletListManager.updateWalletModels()
-    }
-}
-
 extension CardViewModel: CardDerivableProvider {
     var cardDerivableInteractor: CardDerivable {
         cardInteractor

@@ -12,26 +12,26 @@ import BlockchainSdk
 
 class FakeWalletManager: WalletManager {
     @Published var wallet: BlockchainSdk.Wallet
+    @Published var state: WalletManagerState = .initial
 
     var cardTokens: [BlockchainSdk.Token] = []
     var currentHost: String = "tangem.com"
     var outputsCount: Int?
     var allowsFeeSelection: Bool = true
 
-    var walletPublisher: Published<BlockchainSdk.Wallet>.Publisher { $wallet }
+    var walletPublisher: AnyPublisher<BlockchainSdk.Wallet, Never> { $wallet.eraseToAnyPublisher() }
+    var statePublisher: AnyPublisher<BlockchainSdk.WalletManagerState, Never> { $state.eraseToAnyPublisher() }
 
     init(wallet: BlockchainSdk.Wallet) {
         self.wallet = wallet
     }
 
-    func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            completion(.success(()))
-        }
-    }
+    func setNeedsUpdate() {}
 
-    func updatePublisher() -> AnyPublisher<BlockchainSdk.Wallet, Error> {
-        .anyFail(error: "Not implemented")
+    func update() {}
+
+    func updatePublisher() -> AnyPublisher<WalletManagerState, Never> {
+        .just(output: state)
     }
 
     func removeToken(_ token: BlockchainSdk.Token) {
