@@ -43,10 +43,6 @@ extension GenericConfig: UserWalletConfig {
         [.secp256k1, .ed25519]
     }
 
-    var canSkipBackup: Bool {
-        card.firmwareVersion < .keysImportAvailable
-    }
-
     var supportedBlockchains: Set<Blockchain> {
         let allBlockchains = AppEnvironment.current.isTestnet ? Blockchain.supportedTestnetBlockchains
             : Blockchain.supportedBlockchains
@@ -55,10 +51,6 @@ extension GenericConfig: UserWalletConfig {
     }
 
     var defaultBlockchains: [StorageEntry] {
-        if let persistentBlockchains = persistentBlockchains {
-            return persistentBlockchains
-        }
-
         let isTestnet = AppEnvironment.current.isTestnet
         let blockchains: [Blockchain] = [.ethereum(testnet: isTestnet), .bitcoin(testnet: isTestnet)]
 
@@ -180,38 +172,22 @@ extension GenericConfig: UserWalletConfig {
             return .available
         case .transactionHistory:
             return .hidden
-        case .seedPhrase:
-            return card.settings.isKeysImportAllowed ? .available : .hidden
         case .accessCodeRecoverySettings:
-            return card.firmwareVersion >= .keysImportAvailable ? .available : .hidden
+            return .hidden
         case .promotion:
             return .available
         }
     }
 
-    func makeWalletModel(for token: StorageEntry) throws -> WalletModel {
-        let walletPublicKeys: [EllipticCurve: Data] = card.wallets.reduce(into: [:]) { partialResult, cardWallet in
-            partialResult[cardWallet.curve] = cardWallet.publicKey
-        }
+    func makeWalletModelsFactory() -> WalletModelsFactory {
+        return CommonWalletModelsFactory(derivationStyle: card.derivationStyle)
+    }
 
-        let factory = WalletModelsFactory()
-        if card.settings.isHDWalletAllowed {
-            let derivedKeys: [EllipticCurve: [DerivationPath: ExtendedPublicKey]] = card.wallets.reduce(into: [:]) { partialResult, cardWallet in
-                partialResult[cardWallet.curve] = cardWallet.derivedKeys
-            }
-
-            return try factory.makeMultipleWallet(
-                seedKeys: walletPublicKeys,
-                entry: token,
-                derivedKeys: derivedKeys,
-                derivationStyle: card.derivationStyle
-            )
+    func makeAnyWalletManagerFacrory() throws -> AnyWalletManagerFactory {
+        if hasFeature(.hdWallets) {
+            return HDWalletManagerFactory()
         } else {
-            return try factory.makeMultipleWallet(
-                walletPublicKeys: walletPublicKeys,
-                entry: token,
-                derivationStyle: card.derivationStyle
-            )
+            return SimpleWalletManagerFactory()
         }
     }
 }

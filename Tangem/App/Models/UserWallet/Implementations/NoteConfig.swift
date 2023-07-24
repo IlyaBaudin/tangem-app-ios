@@ -143,8 +143,6 @@ extension NoteConfig: UserWalletConfig {
             return .available
         case .transactionHistory:
             return .hidden
-        case .seedPhrase:
-            return .hidden
         case .accessCodeRecoverySettings:
             return .hidden
         case .promotion:
@@ -152,20 +150,12 @@ extension NoteConfig: UserWalletConfig {
         }
     }
 
-    func makeWalletModel(for token: StorageEntry) throws -> WalletModel {
-        let blockchain = token.blockchainNetwork.blockchain
+    func makeWalletModelsFactory() -> WalletModelsFactory {
+        return CommonWalletModelsFactory(derivationStyle: nil)
+    }
 
-        guard let walletPublicKey = card.wallets.first(where: { $0.curve == blockchain.curve })?.publicKey else {
-            throw CommonError.noData
-        }
-
-        let factory = WalletModelsFactory()
-        return try factory.makeSingleWallet(
-            walletPublicKey: walletPublicKey,
-            blockchain: blockchain,
-            token: token.tokens.first,
-            derivationStyle: card.derivationStyle
-        )
+    func makeAnyWalletManagerFacrory() throws -> AnyWalletManagerFactory {
+        return SimpleWalletManagerFactory()
     }
 }
 

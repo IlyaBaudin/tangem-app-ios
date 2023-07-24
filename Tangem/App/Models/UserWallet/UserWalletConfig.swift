@@ -42,8 +42,6 @@ protocol UserWalletConfig: OnboardingStepsBuilderFactory, BackupServiceFactory, 
 
     var emailData: [EmailCollectedData] { get }
 
-    var cardAmountType: Amount.AmountType? { get }
-
     var userWalletIdSeed: Data? { get }
 
     var productType: Analytics.ProductType { get }
@@ -52,16 +50,14 @@ protocol UserWalletConfig: OnboardingStepsBuilderFactory, BackupServiceFactory, 
 
     func getFeatureAvailability(_ feature: UserWalletFeature) -> UserWalletFeature.Availability
 
-    func makeWalletModel(for token: StorageEntry) throws -> WalletModel
+    func makeWalletModelsFactory() -> WalletModelsFactory
+
+    func makeAnyWalletManagerFacrory() throws -> AnyWalletManagerFactory
 }
 
 extension UserWalletConfig {
     func hasFeature(_ feature: UserWalletFeature) -> Bool {
         getFeatureAvailability(feature).isAvailable
-    }
-
-    var cardAmountType: Amount.AmountType? {
-        return nil
     }
 
     var tou: TOU {
