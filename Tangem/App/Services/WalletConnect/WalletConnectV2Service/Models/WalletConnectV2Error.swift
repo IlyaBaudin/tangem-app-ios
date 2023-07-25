@@ -24,6 +24,10 @@ enum WalletConnectV2Error: LocalizedError {
     case wrongCardSelected
     case sessionConnetionTimeout
     case unsupportedDApp
+    case missingActiveUserWalletModel
+    case missingUserWalletWithTargetId
+    case userWalletRepositoryIsLocked
+    case userWalletIsLocked
 
     case unknown(String)
 
@@ -44,6 +48,10 @@ enum WalletConnectV2Error: LocalizedError {
         case .wrongCardSelected: return 8013
         case .sessionConnetionTimeout: return 8014
         case .unsupportedDApp: return 8015
+        case .missingActiveUserWalletModel: return 8016
+        case .missingUserWalletWithTargetId: return 8017
+        case .userWalletRepositoryIsLocked: return 8018
+        case .userWalletIsLocked: return 8019
 
         case .unknown: return 8999
         }

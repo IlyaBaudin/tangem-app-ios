@@ -13,7 +13,7 @@ import TangemSdk
 
 class CommonUserWalletRepository: UserWalletRepository {
     @Injected(\.tangemApiService) private var tangemApiService: TangemApiService
-    @Injected(\.walletConnectService) private var walletConnectServiceProvider: WalletConnectService
+    @Injected(\.walletConnectService) private var walletConnectService: WalletConnectService
     @Injected(\.failedScanTracker) var failedCardScanTracker: FailedScanTrackable
     @Injected(\.analyticsContext) var analyticsContext: AnalyticsContext
 
@@ -348,6 +348,7 @@ class CommonUserWalletRepository: UserWalletRepository {
             }
         }
 
+        walletConnectService.disconnectAllSessionsForUserWallet(with: userWalletId.toHexString())
         sendEvent(.deleted(userWalletId: userWalletId))
     }
 
@@ -376,7 +377,6 @@ class CommonUserWalletRepository: UserWalletRepository {
 
         analyticsContext.setupContext(with: contextData)
         tangemApiService.setAuthData(cardInfo.card.tangemApiAuthData)
-        walletConnectServiceProvider.initialize(with: cardModel)
     }
 
     private func clearUserWallets() {
@@ -395,7 +395,6 @@ class CommonUserWalletRepository: UserWalletRepository {
 
     // TODO: refactor
     private func resetServices() {
-        walletConnectServiceProvider.reset()
         analyticsContext.clearContext()
     }
 
@@ -419,6 +418,7 @@ class CommonUserWalletRepository: UserWalletRepository {
                     self.userWallets = self.savedUserWallets(withSensitiveData: true)
                     self.loadModels()
                     self.initializeServicesForSelectedModel()
+                    self.walletConnectService.initialize()
                     self.selectedModel?.initialUpdate()
 
                     if let selectedModel = self.selectedModel {
@@ -494,6 +494,7 @@ class CommonUserWalletRepository: UserWalletRepository {
 
                 setSelectedUserWalletId(savedUserWallet.userWalletId, reason: .userSelected)
                 initializeServicesForSelectedModel()
+                walletConnectService.initialize()
                 selectedModel?.initialUpdate()
 
                 sendEvent(.updated(userWalletModel: cardModel))

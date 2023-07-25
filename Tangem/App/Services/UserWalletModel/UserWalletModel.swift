@@ -15,6 +15,7 @@ protocol UserWalletModel: MultiWalletCardHeaderInfoProvider, TotalBalanceProvidi
     var userWalletId: UserWalletId { get }
     var userWallet: UserWallet { get }
     var walletModelsManager: WalletModelsManager { get }
+    var signer: TangemSigner { get }
 
     func initialUpdate()
     func updateWalletName(_ name: String)

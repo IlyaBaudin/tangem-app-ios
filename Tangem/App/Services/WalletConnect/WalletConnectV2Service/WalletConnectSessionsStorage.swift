@@ -10,14 +10,12 @@ import Combine
 
 protocol WalletConnectSessionsStorage: Actor {
     var sessions: AsyncStream<[WalletConnectSavedSession]> { get async }
-    @discardableResult
-    func loadSessions(for userWalletId: String) -> [WalletConnectSavedSession]
+    func restoreAllSessions()
     func save(_ session: WalletConnectSavedSession)
     func session(with id: Int) -> WalletConnectSavedSession?
     func session(with topic: String) -> WalletConnectSavedSession?
-    func removeSession(with id: Int)
     func remove(_ session: WalletConnectSavedSession)
-    func clearStorage()
+    func removeSessions(for userWalletId: String) -> [WalletConnectSavedSession]
 }
 
 private struct WalletConnectSessionsStorageKey: InjectionKey {
@@ -33,16 +31,36 @@ extension InjectedValues {
 
 actor CommonWalletConnectSessionsStorage {
     @Injected(\.persistentStorage) private var storage: PersistentStorageProtocol
+    @Injected(\.userWalletRepository) private var userWalletRepository: UserWalletRepository
 
     var sessions: AsyncStream<[WalletConnectSavedSession]> {
         get async {
-            await $_sessions.values
+            await allSessions.values
         }
     }
 
-    @Published private var _sessions: [WalletConnectSavedSession] = []
+    private let allSessions: CurrentValueSubject<[WalletConnectSavedSession], Never> = .init([])
+    private var sessionsFilteringSubscription: AnyCancellable?
 
-    private var currentUserWalletId: String?
+    func restoreAllSessions() {
+        var savedSessions: [WalletConnectSavedSession] = (try? storage.value(for: .allWalletConnectSessions)) ?? []
+
+        var shouldOverwriteAllSavedSessions = false
+        for userWallet in userWalletRepository.models {
+            // Migration from saving WC sessions by userWalletId to storing in single array of WC sessions
+            if let oldSavedSessions: [WalletConnectSavedSession] = try? storage.value(for: .walletConnectSessions(userWalletId: userWallet.userWalletId.stringValue)) {
+                savedSessions.append(contentsOf: oldSavedSessions)
+                try? storage.store(value: [WalletConnectSavedSession]?(nil), for: .walletConnectSessions(userWalletId: userWallet.userWalletId.stringValue))
+                shouldOverwriteAllSavedSessions = true
+            }
+        }
+
+        allSessions.value = savedSessions
+
+        if shouldOverwriteAllSavedSessions {
+            saveSessionsToFile()
+        }
+    }
 
     private func readSessionsFromFile(with key: String) -> [WalletConnectSavedSession] {
         let savedSessions: [WalletConnectSavedSession] = (try? storage.value(for: .walletConnectSessions(userWalletId: key))) ?? []
@@ -50,10 +68,8 @@ actor CommonWalletConnectSessionsStorage {
     }
 
     private func saveSessionsToFile() {
-        guard let currentUserWalletId else { return }
-
         do {
-            try storage.store(value: _sessions, for: .walletConnectSessions(userWalletId: currentUserWalletId))
+            try storage.store(value: allSessions.value, for: .allWalletConnectSessions)
         } catch {
             AppLog.shared.error(error)
         }
@@ -61,39 +77,47 @@ actor CommonWalletConnectSessionsStorage {
 }
 
 extension CommonWalletConnectSessionsStorage: WalletConnectSessionsStorage {
-    func clearStorage() {
-        _sessions.removeAll()
-        saveSessionsToFile()
-    }
-
-    func loadSessions(for userWalletId: String) -> [WalletConnectSavedSession] {
-        currentUserWalletId = userWalletId
-        let savedSessions = readSessionsFromFile(with: userWalletId)
-        _sessions = savedSessions
-        return savedSessions
-    }
-
     func save(_ session: WalletConnectSavedSession) {
-        _sessions.append(session)
+        allSessions.value.append(session)
         saveSessionsToFile()
     }
 
     func session(with id: Int) -> WalletConnectSavedSession? {
-        return _sessions.first(where: { $0.id == id })
+        return allSessions.value.first(where: { $0.id == id })
     }
 
     func session(with topic: String) -> WalletConnectSavedSession? {
-        _sessions.first(where: { $0.topic == topic })
-    }
-
-    func removeSession(with id: Int) {
-        guard let session = session(with: id) else { return }
-
-        remove(session)
+        let session = allSessions.value.first(where: { $0.topic == topic })
+        return session
     }
 
     func remove(_ session: WalletConnectSavedSession) {
-        _sessions.remove(session)
+        allSessions.value.remove(session)
         saveSessionsToFile()
+    }
+
+    func removeSessions(for userWalletId: String) -> [WalletConnectSavedSession] {
+        var sessions = allSessions.value
+        var removedSessions = [WalletConnectSavedSession]()
+        var indexiesToRemove = [Int]()
+        for i in stride(from: sessions.endIndex - 1, through: 0, by: -1) {
+            let session = sessions[i]
+            if session.userWalletId.caseInsensitiveCompare(userWalletId) == .orderedSame {
+                indexiesToRemove.append(i)
+                removedSessions.append(session)
+            }
+        }
+
+        indexiesToRemove.forEach {
+            sessions.remove(at: $0)
+        }
+
+        if removedSessions.isEmpty {
+            return []
+        }
+
+        allSessions.value = sessions
+        saveSessionsToFile()
+        return removedSessions
     }
 }
