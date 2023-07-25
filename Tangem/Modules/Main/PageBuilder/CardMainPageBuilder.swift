@@ -33,16 +33,12 @@ enum CardMainPageBuilder: Identifiable {
     }
 
     @ViewBuilder
-    func body(_ connector: CardsInfoPagerScrollViewConnector) -> some View {
+    var body: some View {
         switch self {
         case .singleWallet(_, _, let bodyModel):
-            CardsPagerContent(scrollViewConnector: connector) {
-                SingleWalletContentCoordinatorView(coordinator: bodyModel)
-            }
+            SingleWalletContentCoordinatorView(coordinator: bodyModel)
         case .multiWallet(_, _, let bodyModel):
-            CardsPagerContent(scrollViewConnector: connector) {
-                MultiWalletContentCoordinatorView(coordinator: bodyModel)
-            }
+            MultiWalletContentCoordinatorView(coordinator: bodyModel)
         }
     }
 }

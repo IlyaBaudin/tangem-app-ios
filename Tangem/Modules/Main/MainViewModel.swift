@@ -11,8 +11,16 @@ import SwiftUI
 
 class MultiWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
     private let subject: PassthroughSubject<String, Never> = .init()
-
+    private let separator = " • "
     private let userWalletModel: UserWalletModel
+
+    private var suffix: String {
+        if userWalletModel.userWallet.card.wallets.contains(where: { $0.isImported ?? false }) {
+            return separator + Localization.commonSeedPhrase
+        }
+
+        return ""
+    }
 
     var subtitlePublisher: AnyPublisher<String, Never> {
         subject.eraseToAnyPublisher()
@@ -21,8 +29,6 @@ class MultiWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
     init(userWalletModel: UserWalletModel) {
         self.userWalletModel = userWalletModel
     }
-
-    private func initialSetup() {}
 
     private func bind() {}
 }
@@ -103,6 +109,19 @@ final class MainViewModel: ObservableObject {
     func scanNewCard() {}
 
     func openDetails() {}
+
+    func onPullToRefresh(completionHandler: @escaping RefreshCompletionHandler) {
+        let page = pages[selectedCardIndex]
+        let model = userWalletRepository.models[selectedCardIndex]
+        switch page {
+        case .singleWallet:
+            model.walletModelsManager.updateAll(silent: false, completion: completionHandler)
+        case .multiWallet:
+            model.userTokenListManager.updateLocalRepositoryFromServer { _ in
+                model.walletModelsManager.updateAll(silent: true, completion: completionHandler)
+            }
+        }
+    }
 
     private func bind() {}
 }

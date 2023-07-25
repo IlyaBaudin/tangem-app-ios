@@ -143,7 +143,7 @@ final class FakeCardHeaderPreviewProvider: ObservableObject {
 }
 
 extension FakeCardHeaderPreviewProvider {
-    final class CardInfoProvider: MultiWalletCardHeaderInfoProvider, TotalBalanceProviding {
+    final class CardInfoProvider: CardHeaderInfoProvider, TotalBalanceProviding {
         @Published var cardName: String
         @Published var numberOfCards: Int
         @Published var balance: LoadingValue<TotalBalanceProvider.TotalBalance> = .loading

@@ -78,7 +78,7 @@ extension UserWalletConfig {
     var derivationStyle: DerivationStyle? {
         return nil
     }
-    
+
     var cardImage: ImageType? {
         return nil
     }

@@ -31,16 +31,6 @@ struct MultiWalletCardHeaderView: View {
                         .frame(height: 34)
 
                     Text(viewModel.subtitleAttributedString)
-//                        .showSensitiveInformation(viewModel)
-//                    HStack(spacing: 6) {
-//                        Text(viewModel.numberOfCards)
-//
-//                        if viewModel.isWalletImported {
-//                            Text("•")
-//
-//                            Text(Localization.commonSeedPhrase)
-//                        }
-//                    }
                         .style(Fonts.Regular.caption2, color: Colors.Text.disabled)
                         .fixedSize()
                 }

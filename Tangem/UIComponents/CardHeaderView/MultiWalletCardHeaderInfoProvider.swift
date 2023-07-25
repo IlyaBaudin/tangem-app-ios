@@ -13,9 +13,7 @@ protocol CardHeaderSubtitleProvider: AnyObject {
     var subtitlePublisher: AnyPublisher<String, Never> { get }
 }
 
-protocol MultiWalletCardHeaderInfoProvider: AnyObject {
+protocol CardHeaderInfoProvider: AnyObject {
     var cardNamePublisher: AnyPublisher<String, Never> { get }
-    var numberOfCardsPublisher: AnyPublisher<Int, Never> { get }
-    var isWalletImported: Bool { get }
     var cardImage: ImageType? { get }
 }

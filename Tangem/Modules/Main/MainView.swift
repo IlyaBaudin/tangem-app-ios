@@ -6,42 +6,7 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
-import Combine
 import SwiftUI
-import BlockchainSdk
-
-struct CardsPagerContent<Content: View>: View {
-    private let coordinateSpaceName = UUID()
-
-    private let contentView: Content
-    private let scrollViewConnector: CardsInfoPagerScrollViewConnector
-
-    init(scrollViewConnector: CardsInfoPagerScrollViewConnector, @ViewBuilder content: () -> Content) {
-        self.scrollViewConnector = scrollViewConnector
-        contentView = content()
-    }
-
-    var body: some View {
-        RefreshableScrollView(onRefresh: { completion in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                completion()
-            }
-        }) {
-            LazyVStack(spacing: 0.0) {
-                scrollViewConnector.headerPlaceholderView
-
-                Spacer(minLength: 16)
-
-                contentView
-            }
-            .readContentOffset(
-                inCoordinateSpace: .named(coordinateSpaceName),
-                bindTo: scrollViewConnector.contentOffset
-            )
-        }
-        .coordinateSpace(name: coordinateSpaceName)
-    }
-}
 
 struct MainView: View {
     @ObservedObject var viewModel: MainViewModel
@@ -53,9 +18,10 @@ struct MainView: View {
             headerFactory: { info in
                 info.header
             },
-            contentFactory: { info, scrollViewConnector in
-                info.body(scrollViewConnector)
-            }
+            contentFactory: { info in
+                info.body
+            },
+            onPullToRefresh: viewModel.onPullToRefresh(completionHandler:)
         )
         .navigationBarBackButtonHidden(true)
         .background(Colors.Background.secondary.edgesIgnoringSafeArea(.all))

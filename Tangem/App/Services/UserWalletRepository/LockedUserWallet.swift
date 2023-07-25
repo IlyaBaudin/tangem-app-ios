@@ -11,7 +11,9 @@ import Combine
 import BlockchainSdk
 
 class LockedUserWallet: UserWalletModel {
-    var walletModelsManager: WalletModelsManager = WalletModelsManagerMock()
+    let walletModelsManager: WalletModelsManager = WalletModelsManagerMock()
+    let userTokenListManager: UserTokenListManager = UserTokenListManagerMock()
+
     var signer: TangemSigner
 
     var tokensCount: Int? { nil }
@@ -79,18 +81,9 @@ extension LockedUserWallet {
     }
 }
 
-extension LockedUserWallet: MultiWalletCardHeaderInfoProvider {
+extension LockedUserWallet: CardHeaderInfoProvider {
     var cardNamePublisher: AnyPublisher<String, Never> {
         cardNameSubject.eraseToAnyPublisher()
-    }
-
-    var numberOfCardsPublisher: AnyPublisher<Int, Never> {
-        .just(output: config.cardsCount)
-            .eraseToAnyPublisher()
-    }
-
-    var isWalletImported: Bool {
-        false
     }
 
     var cardImage: ImageType? {

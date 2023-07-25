@@ -16,6 +16,7 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
     let walletModelsManager: WalletModelsManager
     let userTokenListManager: UserTokenListManager
     let totalBalanceProvider: TotalBalanceProviding
+    let signer: TangemSigner = .init(with: "", sdk: .init())
 
     let userWallet: UserWallet
     let isMultiWallet: Bool
@@ -48,16 +49,8 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
     }
 }
 
-extension FakeUserWalletModel: MultiWalletCardHeaderInfoProvider {
+extension FakeUserWalletModel: CardHeaderInfoProvider {
     var cardNamePublisher: AnyPublisher<String, Never> { $cardName.eraseToAnyPublisher() }
-
-    var numberOfCardsPublisher: AnyPublisher<Int, Never> {
-        .just(output: 3)
-    }
-
-    var isWalletImported: Bool {
-        true
-    }
 
     var cardImage: ImageType? {
         switch userWallet.walletData {

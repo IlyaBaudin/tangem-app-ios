@@ -10,26 +10,24 @@ import Foundation
 import Combine
 
 final class MultiWalletCardHeaderViewModel: ObservableObject {
-    let isWalletImported: Bool
     let cardImage: ImageType?
 
     @Published private(set) var cardName: String = ""
     @Published private(set) var subtitleAttributedString: String = ""
-    @Published private(set) var numberOfCards: String = ""
     @Published private(set) var balance: NSAttributedString = .init(string: "")
     @Published var isLoadingBalance: Bool = true
     @Published var showSensitiveInformation: Bool = true
 
     var isWithCardImage: Bool { cardImage != nil }
 
-    private let cardInfoProvider: MultiWalletCardHeaderInfoProvider
+    private let cardInfoProvider: CardHeaderInfoProvider
     private let cardSubtitleProvider: CardHeaderSubtitleProvider?
     private let balanceProvider: TotalBalanceProviding
 
     private var bag: Set<AnyCancellable> = []
 
     init(
-        cardInfoProvider: MultiWalletCardHeaderInfoProvider,
+        cardInfoProvider: CardHeaderInfoProvider,
         cardSubtitleProvider: CardHeaderSubtitleProvider? = nil,
         balanceProvider: TotalBalanceProviding
     ) {
@@ -37,7 +35,6 @@ final class MultiWalletCardHeaderViewModel: ObservableObject {
         self.cardSubtitleProvider = cardSubtitleProvider
         self.balanceProvider = balanceProvider
 
-        isWalletImported = cardInfoProvider.isWalletImported
         cardImage = cardInfoProvider.cardImage
         bind()
     }
@@ -46,13 +43,6 @@ final class MultiWalletCardHeaderViewModel: ObservableObject {
         cardInfoProvider.cardNamePublisher
             .receive(on: DispatchQueue.main)
             .weakAssign(to: \.cardName, on: self)
-            .store(in: &bag)
-
-        cardInfoProvider.numberOfCardsPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] numberOfCards in
-                self?.numberOfCards = Localization.cardLabelCardCount(numberOfCards)
-            }
             .store(in: &bag)
 
         cardSubtitleProvider?.subtitlePublisher

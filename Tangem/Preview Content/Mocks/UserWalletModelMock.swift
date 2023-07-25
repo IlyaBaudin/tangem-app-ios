@@ -13,6 +13,7 @@ class UserWalletModelMock: UserWalletModel {
     var signer: TangemSigner = .init(with: nil, sdk: .init())
 
     var walletModelsManager: WalletModelsManager { WalletModelsManagerMock() }
+    var userTokenListManager: UserTokenListManager { UserTokenListManagerMock() }
 
     var isMultiWallet: Bool { false }
 

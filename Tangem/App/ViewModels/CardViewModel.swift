@@ -578,14 +578,8 @@ extension CardViewModel: DerivationManagerDelegate {
     }
 }
 
-extension CardViewModel: MultiWalletCardHeaderInfoProvider {
+extension CardViewModel: CardHeaderInfoProvider {
     var cardNamePublisher: AnyPublisher<String, Never> { $cardName.eraseToAnyPublisher() }
-
-    var numberOfCardsPublisher: AnyPublisher<Int, Never> { .just(output: config.cardsCount) }
-
-    var isWalletImported: Bool {
-        cardInfo.card.wallets.contains(where: { $0.isImported ?? false })
-    }
 
     var cardImage: ImageType? { config.cardImage }
 }
