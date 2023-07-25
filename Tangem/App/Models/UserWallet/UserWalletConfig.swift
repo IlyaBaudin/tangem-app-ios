@@ -23,6 +23,8 @@ protocol UserWalletConfig: OnboardingStepsBuilderFactory, BackupServiceFactory, 
 
     var mandatoryCurves: [EllipticCurve] { get }
 
+    var derivationStyle: DerivationStyle? { get }
+
     var tangemSigner: TangemSigner { get }
 
     var warningEvents: [WarningEvent] { get }
@@ -73,6 +75,10 @@ extension UserWalletConfig {
         true
     }
 
+    var derivationStyle: DerivationStyle? {
+        return nil
+    }
+    
     var cardImage: ImageType? {
         return nil
     }
