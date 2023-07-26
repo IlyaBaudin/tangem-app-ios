@@ -9,72 +9,35 @@
 import Combine
 import SwiftUI
 
-class MultiWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
-    private let subject: PassthroughSubject<String, Never> = .init()
-    private let separator = " • "
-    private let userWalletModel: UserWalletModel
+enum CardHeaderSubtitleFormattingOption {
+    case `default`
+    case error
 
-    private var suffix: String {
-        if userWalletModel.userWallet.card.wallets.contains(where: { $0.isImported ?? false }) {
-            return separator + Localization.commonSeedPhrase
+    var textColor: Color {
+        switch self {
+        case .default: return Colors.Text.tertiary
+        case .error: return Colors.Text.attention
         }
-
-        return ""
     }
 
-    var subtitlePublisher: AnyPublisher<String, Never> {
-        subject.eraseToAnyPublisher()
+    var font: Font {
+        Fonts.Regular.caption2
     }
-
-    init(userWalletModel: UserWalletModel) {
-        self.userWalletModel = userWalletModel
-    }
-
-    private func bind() {}
 }
 
-class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
-    private let subject: PassthroughSubject<String, Never> = .init()
+struct CardHeaderSubtitleInfo {
+    let message: String
+    let formattingOption: CardHeaderSubtitleFormattingOption
 
-    private let userWalletModel: UserWalletModel
-    private let walletModel: WalletModel?
-    private var stateUpdateSubscription: AnyCancellable?
-
-    var subtitlePublisher: AnyPublisher<String, Never> {
-        subject.eraseToAnyPublisher()
-    }
-
-    init(userWalletModel: UserWalletModel, walletModel: WalletModel?) {
-        self.userWalletModel = userWalletModel
-        self.walletModel = walletModel
-        bind()
-    }
-
-    private func bind() {
-//        stateUpdateSubscription = walletModel?.$state
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveValue: { [weak self] newState in
-//                if self?.userWalletModel.userWallet.isLocked ?? false {
-//                    return
-//                }
-        ////                if case .idle = newState {
-//                guard let walletModel = self?.walletModel else {
-//                    return
-//                }
-//
-//                let balance = walletModel.getBalance(for: .coin)
-//                self?.subject.send(balance.isEmpty ? BalanceFormatter.defaultEmptyBalanceString : balance)
-        ////                }
-//            })
-    }
+    static let empty: CardHeaderSubtitleInfo = .init(message: "", formattingOption: .default)
 }
 
 final class MainViewModel: ObservableObject {
     // MARK: - ViewState
 
     @Published var pages: [CardMainPageBuilder] = []
-    @Published var cardsIndicies = [0, 1, 2]
     @Published var selectedCardIndex = 0
+    @Published var isHorizontalScrollDisabled = false
 
     // MARK: - Dependencies
 
@@ -92,6 +55,8 @@ final class MainViewModel: ObservableObject {
         self.userWalletRepository = userWalletRepository
 
         pages = mainPageContentFactory.createPages(from: userWalletRepository.models)
+
+        disableHorizontalScrollIfNeeded()
     }
 
     convenience init(
@@ -121,6 +86,10 @@ final class MainViewModel: ObservableObject {
                 model.walletModelsManager.updateAll(silent: true, completion: completionHandler)
             }
         }
+    }
+
+    private func disableHorizontalScrollIfNeeded() {
+        isHorizontalScrollDisabled = pages.count <= 1
     }
 
     private func bind() {}

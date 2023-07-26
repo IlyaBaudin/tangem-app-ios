@@ -14,7 +14,7 @@ protocol MainPageContentFactory {
 
 struct CommonMainPageContentFactory: MainPageContentFactory {
     func createPages(from models: [UserWalletModel]) -> [CardMainPageBuilder] {
-        return models.map {
+        return models.compactMap {
             let id = $0.userWalletId.stringValue
 
             if $0.isMultiWallet {
@@ -33,11 +33,15 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
                 )
             }
 
+            guard let walletModel = $0.walletModelsManager.walletModels.first else {
+                return nil
+            }
+
             let coordinator = SingleWalletContentCoordinator()
             coordinator.start(with: .init())
             let header = MultiWalletCardHeaderViewModel(
                 cardInfoProvider: $0,
-                cardSubtitleProvider: SingleWalletCardHeaderSubtitleProvider(userWalletModel: $0, walletModel: $0.walletModelsManager.walletModels.first),
+                cardSubtitleProvider: SingleWalletCardHeaderSubtitleProvider(userWalletModel: $0, walletModel: walletModel),
                 balanceProvider: $0
             )
             return .singleWallet(

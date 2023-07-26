@@ -8,27 +8,40 @@
 
 import Foundation
 import Combine
+import CombineExt
 
 final class MultiWalletCardHeaderViewModel: ObservableObject {
     let cardImage: ImageType?
 
     @Published private(set) var cardName: String = ""
+    @Published private(set) var subtitleInfo: CardHeaderSubtitleInfo = .empty
     @Published private(set) var subtitleAttributedString: String = ""
     @Published private(set) var balance: NSAttributedString = .init(string: "")
-    @Published var isLoadingBalance: Bool = true
+    @Published var isLoadingFiatBalance: Bool = true
+    @Published var isLoadingSubtitle: Bool = true
     @Published var showSensitiveInformation: Bool = true
+
+    var showSensitiveSubtitleInformation: Bool {
+        guard isSubtitleContainsSensitiveInformation else {
+            return true
+        }
+
+        return showSensitiveInformation
+    }
 
     var isWithCardImage: Bool { cardImage != nil }
 
+    private let isSubtitleContainsSensitiveInformation: Bool
+
     private let cardInfoProvider: CardHeaderInfoProvider
-    private let cardSubtitleProvider: CardHeaderSubtitleProvider?
+    private let cardSubtitleProvider: CardHeaderSubtitleProvider
     private let balanceProvider: TotalBalanceProviding
 
     private var bag: Set<AnyCancellable> = []
 
     init(
         cardInfoProvider: CardHeaderInfoProvider,
-        cardSubtitleProvider: CardHeaderSubtitleProvider? = nil,
+        cardSubtitleProvider: CardHeaderSubtitleProvider,
         balanceProvider: TotalBalanceProviding
     ) {
         self.cardInfoProvider = cardInfoProvider
@@ -36,18 +49,24 @@ final class MultiWalletCardHeaderViewModel: ObservableObject {
         self.balanceProvider = balanceProvider
 
         cardImage = cardInfoProvider.cardImage
+        isSubtitleContainsSensitiveInformation = cardSubtitleProvider.containsSensitiveInfo
         bind()
     }
 
     private func bind() {
         cardInfoProvider.cardNamePublisher
             .receive(on: DispatchQueue.main)
-            .weakAssign(to: \.cardName, on: self)
+            .assign(to: \.cardName, on: self, ownership: .weak)
             .store(in: &bag)
 
-        cardSubtitleProvider?.subtitlePublisher
+        cardSubtitleProvider.isLoadingPublisher
             .receive(on: DispatchQueue.main)
-            .weakAssign(to: \.subtitleAttributedString, on: self)
+            .assign(to: \.isLoadingSubtitle, on: self, ownership: .weak)
+            .store(in: &bag)
+
+        cardSubtitleProvider.subtitlePublisher
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.subtitleInfo, on: self, ownership: .weak)
             .store(in: &bag)
 
         balanceProvider.totalBalancePublisher()
@@ -55,16 +74,16 @@ final class MultiWalletCardHeaderViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 switch newValue {
                 case .loading:
-                    self?.isLoadingBalance = true
+                    self?.isLoadingFiatBalance = true
                 case .loaded(let balance):
-                    self?.isLoadingBalance = false
+                    self?.isLoadingFiatBalance = false
 
                     let balanceFormatter = BalanceFormatter()
                     let fiatBalanceFormatted = balanceFormatter.formatFiatBalance(balance.balance, formattingOptions: .defaultFiatFormattingOptions)
                     self?.balance = balanceFormatter.formatTotalBalanceForMain(fiatBalance: fiatBalanceFormatted, formattingOptions: .defaultOptions)
                 case .failedToLoad(let error):
                     AppLog.shared.debug("Failed to load total balance. Reason: \(error)")
-                    self?.isLoadingBalance = false
+                    self?.isLoadingFiatBalance = false
 
                     self?.balance = NSAttributedString(string: BalanceFormatter.defaultEmptyBalanceString)
                 }

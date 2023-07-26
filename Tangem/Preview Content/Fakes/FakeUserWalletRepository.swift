@@ -13,6 +13,8 @@ import BlockchainSdk
 class FakeUserWalletRepository: UserWalletRepository {
     var models: [UserWalletModel] = []
 
+    var userWallets: [UserWallet] = []
+
     var selectedModel: CardViewModel?
 
     var selectedUserWalletId: Data?
@@ -34,6 +36,7 @@ class FakeUserWalletRepository: UserWalletRepository {
             FakeUserWalletModel(
                 cardName: "William Wallet",
                 isMultiWallet: true,
+                cardsCount: 3,
                 userWalletId: .init(with: Data.randomData(count: 32)),
                 walletModels: [
                     WalletModel(
@@ -52,10 +55,25 @@ class FakeUserWalletRepository: UserWalletRepository {
             FakeUserWalletModel(
                 cardName: "Tangem Twins",
                 isMultiWallet: false,
+                cardsCount: 2,
                 userWalletId: .init(with: Data.randomData(count: 32)),
                 walletModels: [
                     WalletModel(
                         walletManager: FakeWalletManager(wallet: .btcWalletStub),
+                        amountType: .coin,
+                        isCustom: false
+                    ),
+                ],
+                userWallet: UserWalletStubs.twinStub
+            ),
+            FakeUserWalletModel(
+                cardName: "XRP Note",
+                isMultiWallet: false,
+                cardsCount: 1,
+                userWalletId: .init(with: Data.randomData(count: 32)),
+                walletModels: [
+                    WalletModel(
+                        walletManager: FakeWalletManager(wallet: .xrpWalletStub),
                         amountType: .coin,
                         isCustom: false
                     ),

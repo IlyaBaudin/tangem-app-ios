@@ -281,6 +281,7 @@ class CardViewModel: Identifiable, ObservableObject {
         }
     }
 
+    private let _updatePublisher: PassthroughSubject<Void, Never> = .init()
     private var bag = Set<AnyCancellable>()
     private var signSubscription: AnyCancellable?
 
@@ -461,6 +462,7 @@ class CardViewModel: Identifiable, ObservableObject {
         _signer = config.tangemSigner
         updateModel()
         userWalletRepository.save(userWallet)
+        _updatePublisher.send(())
     }
 
     func getDisabledLocalizedReason(for feature: UserWalletFeature) -> String? {
@@ -543,6 +545,10 @@ extension CardViewModel: TangemSdkFactory {
 extension CardViewModel: UserWalletModel {
     var tokensCount: Int? {
         walletModelsManager.walletModels.count
+    }
+
+    var updatePublisher: AnyPublisher<Void, Never> {
+        _updatePublisher.eraseToAnyPublisher()
     }
 
     func initialUpdate() {

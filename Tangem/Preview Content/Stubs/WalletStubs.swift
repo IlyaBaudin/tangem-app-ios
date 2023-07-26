@@ -47,4 +47,18 @@ extension Wallet {
             ),
         ]
     )
+
+    static let xrpWalletStub = Wallet(
+        blockchain: .xrp(curve: .secp256k1),
+        addresses: [
+            .default: PlainAddress(
+                value: "rNL1cRHvsiTV1uDRmXNuREVuo9Luuv6Lwt",
+                publicKey: .init(
+                    seedKey: Data(hexString: "0374D0F81F42DDFE34114D533E95E6AE5FE6EA271C96F1FA505199FDC365AE9720"),
+                    derivation: .btcSegwitDerivationStub
+                ),
+                type: .default
+            ),
+        ]
+    )
 }

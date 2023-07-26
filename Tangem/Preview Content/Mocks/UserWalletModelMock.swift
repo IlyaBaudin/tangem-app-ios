@@ -19,6 +19,8 @@ class UserWalletModelMock: UserWalletModel {
 
     var tokensCount: Int? { 10 }
 
+    var cardsCount: Int { 3 }
+
     var userWalletId: UserWalletId { .init(with: Data()) }
 
     var userWallet: UserWallet {
@@ -28,6 +30,8 @@ class UserWalletModelMock: UserWalletModel {
     var cardNamePublisher: AnyPublisher<String, Never> { .just(output: "") }
 
     var numberOfCardsPublisher: AnyPublisher<Int, Never> { .just(output: 1) }
+
+    var updatePublisher: AnyPublisher<Void, Never> { PassthroughSubject().eraseToAnyPublisher() }
 
     var isWalletImported: Bool { false }
 

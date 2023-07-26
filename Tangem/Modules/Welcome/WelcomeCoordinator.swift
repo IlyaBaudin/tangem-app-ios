@@ -91,13 +91,14 @@ extension WelcomeCoordinator: WelcomeRoutable {
     }
 
     func openMain(with cardModel: CardViewModel) {
-        if FeatureProvider.isAvailable(.tokenDetailsV2) {
+        if FeatureProvider.isAvailable(.mainV2) {
             let coordinator = MainCoordinator(popToRootAction: popToRootAction)
             let options = MainCoordinator.Options(cardViewModel: cardModel)
             coordinator.start(with: options)
             mainCoordinator = coordinator
             return
         }
+
         let coordinator = LegacyMainCoordinator(popToRootAction: popToRootAction)
         let options = LegacyMainCoordinator.Options(cardModel: cardModel)
         coordinator.start(with: options)

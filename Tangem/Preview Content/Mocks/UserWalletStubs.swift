@@ -39,4 +39,14 @@ struct UserWalletStubs {
         artwork: nil,
         isHDWalletAllowed: false
     )
+
+    static var xrpNoteStub: UserWallet = .init(
+        userWalletId: Data.randomData(count: 32),
+        name: "XRP Note",
+        card: .init(card: .xrpNote),
+        associatedCardIds: [],
+        walletData: .file(.init(blockchain: "XRP", token: nil)),
+        artwork: nil,
+        isHDWalletAllowed: false
+    )
 }

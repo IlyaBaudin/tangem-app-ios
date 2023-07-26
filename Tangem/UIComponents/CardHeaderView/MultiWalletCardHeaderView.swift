@@ -26,12 +26,17 @@ struct MultiWalletCardHeaderView: View {
                         .scaledToFit()
                         .minimumScaleFactor(0.5)
                         .showSensitiveInformation(viewModel.showSensitiveInformation)
-                        .skeletonable(isShown: viewModel.isLoadingBalance, size: .init(width: 102, height: 24), radius: 6)
+                        .skeletonable(isShown: viewModel.isLoadingFiatBalance, size: .init(width: 102, height: 24), radius: 6)
                         .style(Fonts.Bold.title1, color: Colors.Text.primary1)
                         .frame(height: 34)
 
-                    Text(viewModel.subtitleAttributedString)
-                        .style(Fonts.Regular.caption2, color: Colors.Text.disabled)
+                    Text(viewModel.subtitleInfo.message)
+                        .style(
+                            viewModel.subtitleInfo.formattingOption.font,
+                            color: viewModel.subtitleInfo.formattingOption.textColor
+                        )
+                        .showSensitiveInformation(viewModel.showSensitiveSubtitleInformation)
+                        .skeletonable(isShown: viewModel.isLoadingSubtitle, size: .init(width: 72, height: 16), radius: 6)
                         .fixedSize()
                 }
                 .lineLimit(1)

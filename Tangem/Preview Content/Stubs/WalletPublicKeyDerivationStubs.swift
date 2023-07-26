@@ -34,4 +34,12 @@ extension Wallet.PublicKey.Derivation {
             chainCode: Data(hexString: "EE4696FCB6920DBCBCF33423885C53CB5A16B5AD124715A26DF43299A087FB7D")
         )
     )
+
+    static let xrpDerivationStub = Wallet.PublicKey.Derivation(
+        path: try! .init(rawPath: "m/44'/144'/0'/0/0"),
+        derivedKey: .init(
+            publicKey: Data(hexString: "02616104143281B4679AFEB669392B073D63564606F431D13DF3EBEDE75D269509"),
+            chainCode: Data(hexString: "EE4696FCB6920DBCBCF33423885C53CB5A16B5AD124715A26DF43299A087FB7D")
+        )
+    )
 }

@@ -21,18 +21,24 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
     let userWallet: UserWallet
     let isMultiWallet: Bool
     let userWalletId: UserWalletId
+    var cardsCount: Int
 
     var tokensCount: Int? { walletModelsManager.walletModels.filter { !$0.isMainToken }.count }
+    var updatePublisher: AnyPublisher<Void, Never> { _updatePublisher.eraseToAnyPublisher() }
+
+    private let _updatePublisher: PassthroughSubject<Void, Never> = .init()
 
     internal init(
         cardName: String,
         isMultiWallet: Bool,
+        cardsCount: Int,
         userWalletId: UserWalletId,
         walletModels: [WalletModel],
         userWallet: UserWallet
     ) {
         self.cardName = cardName
         self.isMultiWallet = isMultiWallet
+        self.cardsCount = cardsCount
         self.userWalletId = userWalletId
         walletModelsManager = WalletModelsManagerMock()
         userTokenListManager = CommonUserTokenListManager(hasTokenSynchronization: false, userWalletId: userWalletId.value, hdWalletsSupported: true)
@@ -42,7 +48,10 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
 
     func initialUpdate() {}
 
-    func updateWalletName(_ name: String) {}
+    func updateWalletName(_ name: String) {
+        cardName = name
+        _updatePublisher.send(())
+    }
 
     func totalBalancePublisher() -> AnyPublisher<LoadingValue<TotalBalanceProvider.TotalBalance>, Never> {
         return .just(output: .loading)

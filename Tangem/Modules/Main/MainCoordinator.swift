@@ -10,6 +10,8 @@ import Foundation
 import Combine
 
 class MainCoordinator: CoordinatorObject {
+    @Injected(\.userWalletRepository) private var userWalletRepository: UserWalletRepository
+
     let dismissAction: Action
     let popToRootAction: ParamsAction<PopToRootOptions>
 
@@ -30,7 +32,7 @@ class MainCoordinator: CoordinatorObject {
     }
 
     func start(with options: Options) {
-        mainViewModel = MainViewModel(coordinator: self, userWalletRepository: FakeUserWalletRepository())
+        mainViewModel = MainViewModel(cardViewModel: options.cardViewModel, coordinator: self, userWalletRepository: userWalletRepository)
     }
 }
 

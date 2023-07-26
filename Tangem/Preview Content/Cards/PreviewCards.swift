@@ -21,6 +21,10 @@ extension Card {
         Bundle.main.url(forResource: "twinCard", withExtension: "json")!
     }
 
+    private static var xrpNoteURL: URL {
+        Bundle.main.url(forResource: "xrpNote", withExtension: "json")!
+    }
+
     static var walletWithBackup: Card {
         return decodeFromURL(walletWithBackupUrl)!
     }
@@ -31,6 +35,10 @@ extension Card {
 
     static var twin: Card {
         return decodeFromURL(twinURL)!
+    }
+
+    static var xrpNote: Card {
+        return decodeFromURL(xrpNoteURL)!
     }
 
     private static func decodeFromURL(_ url: URL) -> Card? {
