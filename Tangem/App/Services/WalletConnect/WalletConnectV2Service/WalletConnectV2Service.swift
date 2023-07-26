@@ -45,7 +45,7 @@ final class WalletConnectV2Service {
         }
     }
 
-    private var infoProvider: WalletConnectUserWalletInfoProvider? { userWalletRepository.selectedModel }
+    private var infoProvider: WalletConnectUserWalletInfoProvider?
 
     init(
         uiDelegate: WalletConnectUIDelegate,
@@ -72,13 +72,19 @@ final class WalletConnectV2Service {
         setupMessagesSubscriptions()
     }
 
-    func initialize() {
+    func initialize(with infoProvider: WalletConnectUserWalletInfoProvider) {
+        self.infoProvider = infoProvider
         runTask { [weak self] in
-            await self?.sessionsStorage.restoreAllSessions()
+            await self?.sessionsStorage.loadSessions()
         }
     }
 
     func openSession(with uri: WalletConnectV2URI) {
+        guard let infoProvider else {
+            log("Failed to open session. Info provider wasn't initialized")
+            return
+        }
+
         canEstablishNewSessionSubject.send(false)
         runTask(withTimeout: 20) { [weak self] in
             await self?.pairClient(with: uri)

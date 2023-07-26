@@ -31,8 +31,13 @@ extension CommonWalletConnectService: WalletConnectService {
         }
     }
 
-    func initialize() {
-        v2Service.initialize()
+    func initialize(with infoProvider: WalletConnectUserWalletInfoProvider) {
+        v2Service.initialize(with: infoProvider)
+        incomingActionManager.becomeFirstResponder(self)
+    }
+
+    func reset() {
+        incomingActionManager.resignFirstResponder(self)
     }
 
     func openSession(with uri: WalletConnectRequestURI) {
