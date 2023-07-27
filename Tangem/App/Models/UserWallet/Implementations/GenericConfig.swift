@@ -118,11 +118,7 @@ extension GenericConfig: UserWalletConfig {
     }
 
     var cardImage: ImageType? {
-        if card.firmwareVersion < .keysImportAvailable {
-            return Assets.Cards.wallet
-        }
-
-        return cardsCount == 2 ? Assets.Cards.wallet2Double : Assets.Cards.wallet2Triple
+        Assets.Cards.wallet
     }
 
     func getFeatureAvailability(_ feature: UserWalletFeature) -> UserWalletFeature.Availability {
