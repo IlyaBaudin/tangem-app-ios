@@ -17,6 +17,8 @@ class UserWalletModelMock: UserWalletModel {
 
     var isMultiWallet: Bool { false }
 
+    var isCardLocked: Bool { false }
+
     var tokensCount: Int? { 10 }
 
     var cardsCount: Int { 3 }

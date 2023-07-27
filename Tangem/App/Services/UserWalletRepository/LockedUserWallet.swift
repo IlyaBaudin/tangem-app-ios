@@ -86,6 +86,8 @@ extension LockedUserWallet {
 }
 
 extension LockedUserWallet: CardHeaderInfoProvider {
+    var isCardLocked: Bool { true }
+
     var cardNamePublisher: AnyPublisher<String, Never> {
         cardNameSubject.eraseToAnyPublisher()
     }

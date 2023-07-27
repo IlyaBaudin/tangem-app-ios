@@ -40,11 +40,11 @@
         "publicKey" : "025F16BD1D2EAFE463E62A335A09E6B2BBCBD04452526885CB679FC4D27AF1BD22"
     },
     "firmwareVersion" : {
-        "minor" : 21,
+        "minor" : 52,
         "patch" : 0,
         "major" : 6,
-        "stringValue" : "6.21d SDK",
-        "type" : "d SDK"
+        "stringValue" : "6.52r",
+        "type" : "r"
     },
     "batchId" : "AF19",
     "isPasscodeSet" : false,
@@ -125,4 +125,4 @@
     "userSettings" : {
         "isUserCodeRecoveryAllowed" : true
     }
-    }
+}

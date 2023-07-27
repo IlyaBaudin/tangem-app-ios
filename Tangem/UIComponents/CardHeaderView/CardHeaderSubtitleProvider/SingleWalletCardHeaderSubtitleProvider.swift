@@ -10,7 +10,7 @@ import Foundation
 import Combine
 
 class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
-    private let subject: PassthroughSubject<CardHeaderSubtitleInfo, Never> = .init()
+    private let subject: CurrentValueSubject<CardHeaderSubtitleInfo, Never> = .init(.empty)
     private let isLoadingSubject: CurrentValueSubject<Bool, Never>
 
     private let userWalletModel: UserWalletModel
@@ -30,11 +30,16 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
     init(userWalletModel: UserWalletModel, walletModel: WalletModel?) {
         self.userWalletModel = userWalletModel
         self.walletModel = walletModel
-        isLoadingSubject = .init(!userWalletModel.userWallet.isLocked)
+        isLoadingSubject = .init(!userWalletModel.isCardLocked)
         bind()
     }
 
     private func bind() {
+        if userWalletModel.isCardLocked {
+            displayLockedWalletMessage()
+            return
+        }
+
         stateUpdateSubscription = walletModel?.walletDidChangePublisher
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] newState in
@@ -42,16 +47,11 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
 
                 isLoadingSubject.send(false)
 
-                if userWalletModel.userWallet.isLocked {
-                    displayLockedWalletMessage()
-                    return
-                }
-
                 switch newState {
                 case .failed(let error):
-                    print("Failed to load balance: \(error)")
+                    formatErrorMessage(with: error)
                 case .noAccount(let message):
-                    print("No account: \(message)")
+                    formatErrorMessage(with: message)
                 case .created, .loading, .noDerivation:
                     break
                 case .idle:

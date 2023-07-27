@@ -16,13 +16,14 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
     func createPages(from models: [UserWalletModel]) -> [CardMainPageBuilder] {
         return models.compactMap {
             let id = $0.userWalletId.stringValue
+            let subtitleProvider = CardHeaderSubtitleProviderFactory().provider(for: $0)
 
             if $0.isMultiWallet {
                 let coordinator = MultiWalletContentCoordinator()
                 coordinator.start(with: .init())
                 let header = MultiWalletCardHeaderViewModel(
                     cardInfoProvider: $0,
-                    cardSubtitleProvider: MultiWalletCardHeaderSubtitleProvider(userWalletModel: $0),
+                    cardSubtitleProvider: subtitleProvider,
                     balanceProvider: $0
                 )
 
@@ -37,7 +38,7 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
             coordinator.start(with: .init())
             let header = MultiWalletCardHeaderViewModel(
                 cardInfoProvider: $0,
-                cardSubtitleProvider: SingleWalletCardHeaderSubtitleProvider(userWalletModel: $0, walletModel: $0.walletModelsManager.walletModels.first),
+                cardSubtitleProvider: subtitleProvider,
                 balanceProvider: $0
             )
             return .singleWallet(

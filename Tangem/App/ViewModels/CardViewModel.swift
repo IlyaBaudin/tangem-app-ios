@@ -585,9 +585,11 @@ extension CardViewModel: DerivationManagerDelegate {
 }
 
 extension CardViewModel: CardHeaderInfoProvider {
-    var cardNamePublisher: AnyPublisher<String, Never> { $cardName.eraseToAnyPublisher() }
-
     var cardImage: ImageType? { config.cardImage }
+
+    var isCardLocked: Bool { userWallet.isLocked }
+
+    var cardNamePublisher: AnyPublisher<String, Never> { $cardName.eraseToAnyPublisher() }
 }
 
 extension CardViewModel: CardDerivableProvider {

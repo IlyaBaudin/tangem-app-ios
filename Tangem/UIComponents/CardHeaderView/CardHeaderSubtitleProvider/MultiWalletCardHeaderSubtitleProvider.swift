@@ -32,13 +32,14 @@ class MultiWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
         return ""
     }
 
-    private let subtitleInfoSubject: PassthroughSubject<CardHeaderSubtitleInfo, Never> = .init()
     private let separator = " • "
+    private let subtitleInfoSubject: CurrentValueSubject<CardHeaderSubtitleInfo, Never> = .init(.empty)
     private let userWalletModel: UserWalletModel
     private var updateSubscription: AnyCancellable?
 
     init(userWalletModel: UserWalletModel) {
         self.userWalletModel = userWalletModel
+        formatSubtitle()
     }
 
     private func bind() {

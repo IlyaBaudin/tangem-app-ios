@@ -20,6 +20,7 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
 
     let userWallet: UserWallet
     let isMultiWallet: Bool
+    let isCardLocked: Bool
     let userWalletId: UserWalletId
     var cardsCount: Int
 
@@ -31,6 +32,7 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
     internal init(
         cardName: String,
         isMultiWallet: Bool,
+        isCardLocked: Bool,
         cardsCount: Int,
         userWalletId: UserWalletId,
         walletModels: [WalletModel],
@@ -38,6 +40,7 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
     ) {
         self.cardName = cardName
         self.isMultiWallet = isMultiWallet
+        self.isCardLocked = isCardLocked
         self.cardsCount = cardsCount
         self.userWalletId = userWalletId
         walletModelsManager = WalletModelsManagerMock()
@@ -62,10 +65,67 @@ extension FakeUserWalletModel: CardHeaderInfoProvider {
     var cardNamePublisher: AnyPublisher<String, Never> { $cardName.eraseToAnyPublisher() }
 
     var cardImage: ImageType? {
-        switch userWallet.walletData {
-        case .none: return Assets.Cards.wallet
-        case .twin: return Assets.Cards.twin
-        default: return Assets.Cards.wallet2Triple
-        }
+        UserWalletConfigFactory(userWallet.cardInfo()).makeConfig().cardImage
     }
+}
+
+extension FakeUserWalletModel {
+    static let allFakeWalletModels = [
+        wallet3Cards,
+        twins,
+        xrpNote,
+    ]
+
+    static let wallet3Cards = FakeUserWalletModel(
+        cardName: "William Wallet",
+        isMultiWallet: true,
+        isCardLocked: false,
+        cardsCount: 3,
+        userWalletId: .init(with: Data.randomData(count: 32)),
+        walletModels: [
+            WalletModel(
+                walletManager: FakeWalletManager(wallet: .ethereumWalletStub),
+                amountType: .coin,
+                isCustom: false
+            ),
+            WalletModel(
+                walletManager: FakeWalletManager(wallet: .ethereumWalletStub),
+                amountType: .token(value: .sushiMock),
+                isCustom: false
+            ),
+        ],
+        userWallet: UserWalletStubs.walletV2Stub
+    )
+
+    static let twins = FakeUserWalletModel(
+        cardName: "Tangem Twins",
+        isMultiWallet: false,
+        isCardLocked: true,
+        cardsCount: 2,
+        userWalletId: .init(with: Data.randomData(count: 32)),
+        walletModels: [
+            WalletModel(
+                walletManager: FakeWalletManager(wallet: .btcWalletStub),
+                amountType: .coin,
+                isCustom: false
+            ),
+        ],
+        userWallet: UserWalletStubs.twinStub
+    )
+
+    static let xrpNote = FakeUserWalletModel(
+        cardName: "XRP Note",
+        isMultiWallet: false,
+        isCardLocked: false,
+        cardsCount: 1,
+        userWalletId: .init(with: Data.randomData(count: 32)),
+        walletModels: [
+            WalletModel(
+                walletManager: FakeWalletManager(wallet: .xrpWalletStub),
+                amountType: .coin,
+                isCustom: false
+            ),
+        ],
+        userWallet: UserWalletStubs.xrpNoteStub
+    )
 }

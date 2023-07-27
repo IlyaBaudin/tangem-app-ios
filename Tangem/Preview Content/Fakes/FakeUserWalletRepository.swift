@@ -32,55 +32,7 @@ class FakeUserWalletRepository: UserWalletRepository {
     private let eventSubject = PassthroughSubject<UserWalletRepositoryEvent, Never>()
 
     init() {
-        models = [
-            FakeUserWalletModel(
-                cardName: "William Wallet",
-                isMultiWallet: true,
-                cardsCount: 3,
-                userWalletId: .init(with: Data.randomData(count: 32)),
-                walletModels: [
-                    WalletModel(
-                        walletManager: FakeWalletManager(wallet: .ethereumWalletStub),
-                        amountType: .coin,
-                        isCustom: false
-                    ),
-                    WalletModel(
-                        walletManager: FakeWalletManager(wallet: .ethereumWalletStub),
-                        amountType: .token(value: .sushiMock),
-                        isCustom: false
-                    ),
-                ],
-                userWallet: UserWalletStubs.walletV2Stub
-            ),
-            FakeUserWalletModel(
-                cardName: "Tangem Twins",
-                isMultiWallet: false,
-                cardsCount: 2,
-                userWalletId: .init(with: Data.randomData(count: 32)),
-                walletModels: [
-                    WalletModel(
-                        walletManager: FakeWalletManager(wallet: .btcWalletStub),
-                        amountType: .coin,
-                        isCustom: false
-                    ),
-                ],
-                userWallet: UserWalletStubs.twinStub
-            ),
-            FakeUserWalletModel(
-                cardName: "XRP Note",
-                isMultiWallet: false,
-                cardsCount: 1,
-                userWalletId: .init(with: Data.randomData(count: 32)),
-                walletModels: [
-                    WalletModel(
-                        walletManager: FakeWalletManager(wallet: .xrpWalletStub),
-                        amountType: .coin,
-                        isCustom: false
-                    ),
-                ],
-                userWallet: UserWalletStubs.twinStub
-            ),
-        ]
+        models = FakeUserWalletModel.allFakeWalletModels
     }
 
     func unlock(with method: UserWalletRepositoryUnlockMethod, completion: @escaping (UserWalletRepositoryResult?) -> Void) {}

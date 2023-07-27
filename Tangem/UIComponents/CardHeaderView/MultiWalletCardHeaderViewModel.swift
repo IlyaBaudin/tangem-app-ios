@@ -12,6 +12,7 @@ import CombineExt
 
 final class MultiWalletCardHeaderViewModel: ObservableObject {
     let cardImage: ImageType?
+    let isCardLocked: Bool
 
     @Published private(set) var cardName: String = ""
     @Published private(set) var subtitleInfo: CardHeaderSubtitleInfo = .empty
@@ -48,6 +49,7 @@ final class MultiWalletCardHeaderViewModel: ObservableObject {
         self.cardSubtitleProvider = cardSubtitleProvider
         self.balanceProvider = balanceProvider
 
+        isCardLocked = cardInfoProvider.isCardLocked
         cardImage = cardInfoProvider.cardImage
         isSubtitleContainsSensitiveInformation = cardSubtitleProvider.containsSensitiveInfo
         bind()
@@ -72,6 +74,10 @@ final class MultiWalletCardHeaderViewModel: ObservableObject {
         balanceProvider.totalBalancePublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in
+                if self?.cardInfoProvider.isCardLocked ?? false {
+                    return
+                }
+
                 switch newValue {
                 case .loading:
                     self?.isLoadingFiatBalance = true
