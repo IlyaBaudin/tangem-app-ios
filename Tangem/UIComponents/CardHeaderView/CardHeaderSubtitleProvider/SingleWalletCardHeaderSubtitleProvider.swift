@@ -45,6 +45,10 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
             .sink(receiveValue: { [weak self] newState in
                 guard let self else { return }
 
+                if newState == .created || newState == .loading {
+                    return
+                }
+
                 isLoadingSubject.send(false)
 
                 switch newState {
@@ -52,10 +56,10 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
                     formatErrorMessage(with: error)
                 case .noAccount(let message):
                     formatErrorMessage(with: message)
-                case .created, .loading, .noDerivation:
-                    break
                 case .idle:
                     formatBalanceMessage()
+                case .created, .loading, .noDerivation:
+                    break
                 }
             })
     }

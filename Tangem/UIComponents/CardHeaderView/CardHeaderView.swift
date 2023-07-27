@@ -73,7 +73,7 @@ struct CardHeaderView: View {
     private func leadingContentWidth(containerWidth: CGFloat) -> CGFloat {
         var trailingOffset: CGFloat = 0
 
-        if viewModel.isWithCardImage {
+        if viewModel.cardImage != nil {
             trailingOffset = imageSize.width + horizontalSpacing
         }
 

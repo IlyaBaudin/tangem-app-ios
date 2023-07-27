@@ -16,7 +16,6 @@ final class CardHeaderViewModel: ObservableObject {
 
     @Published private(set) var cardName: String = ""
     @Published private(set) var subtitleInfo: CardHeaderSubtitleInfo = .empty
-    @Published private(set) var subtitleAttributedString: String = ""
     @Published private(set) var balance: NSAttributedString = .init(string: "")
     @Published var isLoadingFiatBalance: Bool = true
     @Published var isLoadingSubtitle: Bool = true
@@ -29,8 +28,6 @@ final class CardHeaderViewModel: ObservableObject {
 
         return showSensitiveInformation
     }
-
-    var isWithCardImage: Bool { cardImage != nil }
 
     private let isSubtitleContainsSensitiveInformation: Bool
 
