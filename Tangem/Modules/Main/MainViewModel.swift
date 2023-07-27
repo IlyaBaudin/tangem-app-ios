@@ -55,20 +55,29 @@ final class MainViewModel: ObservableObject {
         self.userWalletRepository = userWalletRepository
 
         pages = mainPageContentFactory.createPages(from: userWalletRepository.models)
-
         setupHorizontalScrollAvailability()
+    }
+
+    convenience init(
+        userWalletModel: UserWalletModel,
+        coordinator: MainRoutable,
+        userWalletRepository: UserWalletRepository,
+        mainPageContentFactory: MainPageContentFactory = CommonMainPageContentFactory()
+    ) {
+        self.init(coordinator: coordinator, userWalletRepository: userWalletRepository, mainPageContentFactory: mainPageContentFactory)
+
+        if let selectedIndex = pages.firstIndex(where: { $0.id == userWalletModel.userWalletId.stringValue }) {
+            selectedCardIndex = selectedIndex
+        }
     }
 
     convenience init(
         cardViewModel: CardViewModel,
         coordinator: MainRoutable,
-        userWalletRepository: UserWalletRepository
+        userWalletRepository: UserWalletRepository,
+        mainPageContentFactory: MainPageContentFactory = CommonMainPageContentFactory()
     ) {
-        self.init(coordinator: coordinator, userWalletRepository: userWalletRepository)
-
-        if let selectedIndex = pages.firstIndex(where: { $0.id == cardViewModel.userWalletId.stringValue }) {
-            selectedCardIndex = selectedIndex
-        }
+        self.init(userWalletModel: cardViewModel, coordinator: coordinator, userWalletRepository: userWalletRepository, mainPageContentFactory: mainPageContentFactory)
     }
 
     func scanNewCard() {}
@@ -76,7 +85,7 @@ final class MainViewModel: ObservableObject {
     func openDetails() {
         // TODO: Refactor navigation to UserWalletModel instead of CardViewModel
         guard let cardViewModel = userWalletRepository.models[selectedCardIndex] as? CardViewModel else {
-            AppLog.shared.debug("[Main v2] failed to cast user wallet model to CardViewModel")
+            log("Failed to cast user wallet model to CardViewModel")
             return
         }
 
@@ -107,4 +116,8 @@ final class MainViewModel: ObservableObject {
     }
 
     private func bind() {}
+
+    private func log(_ message: String) {
+        AppLog.shared.debug("[Main V2] \(message)")
+    }
 }

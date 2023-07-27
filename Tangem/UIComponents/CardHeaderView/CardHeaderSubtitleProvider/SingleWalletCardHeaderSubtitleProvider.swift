@@ -14,7 +14,7 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
     private let isLoadingSubject: CurrentValueSubject<Bool, Never>
 
     private let userWalletModel: UserWalletModel
-    private let walletModel: WalletModel
+    private let walletModel: WalletModel?
     private var stateUpdateSubscription: AnyCancellable?
 
     var subtitlePublisher: AnyPublisher<CardHeaderSubtitleInfo, Never> {
@@ -27,7 +27,7 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
 
     var containsSensitiveInfo: Bool { true }
 
-    init(userWalletModel: UserWalletModel, walletModel: WalletModel) {
+    init(userWalletModel: UserWalletModel, walletModel: WalletModel?) {
         self.userWalletModel = userWalletModel
         self.walletModel = walletModel
         isLoadingSubject = .init(!userWalletModel.userWallet.isLocked)
@@ -35,7 +35,7 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
     }
 
     private func bind() {
-        stateUpdateSubscription = walletModel.walletDidChangePublisher
+        stateUpdateSubscription = walletModel?.walletDidChangePublisher
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] newState in
                 guard let self else { return }
@@ -61,6 +61,8 @@ class SingleWalletCardHeaderSubtitleProvider: CardHeaderSubtitleProvider {
     }
 
     private func formatBalanceMessage() {
+        guard let walletModel else { return }
+
         let balance = walletModel.balance
         subject.send(.init(message: balance, formattingOption: .default))
     }

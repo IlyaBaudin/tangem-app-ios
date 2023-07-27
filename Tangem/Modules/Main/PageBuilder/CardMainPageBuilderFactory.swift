@@ -33,15 +33,11 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
                 )
             }
 
-            guard let walletModel = $0.walletModelsManager.walletModels.first else {
-                return nil
-            }
-
             let coordinator = SingleWalletContentCoordinator()
             coordinator.start(with: .init())
             let header = MultiWalletCardHeaderViewModel(
                 cardInfoProvider: $0,
-                cardSubtitleProvider: SingleWalletCardHeaderSubtitleProvider(userWalletModel: $0, walletModel: walletModel),
+                cardSubtitleProvider: SingleWalletCardHeaderSubtitleProvider(userWalletModel: $0, walletModel: $0.walletModelsManager.walletModels.first),
                 balanceProvider: $0
             )
             return .singleWallet(
