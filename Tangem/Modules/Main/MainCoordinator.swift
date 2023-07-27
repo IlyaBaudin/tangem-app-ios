@@ -21,6 +21,8 @@ class MainCoordinator: CoordinatorObject {
 
     // MARK: - Child coordinators
 
+    @Published var detailsCoordinator: DetailsCoordinator?
+
     // MARK: - Child view models
 
     required init(
@@ -46,4 +48,16 @@ extension MainCoordinator {
 
 // MARK: - MainRoutable
 
-extension MainCoordinator: MainRoutable {}
+extension MainCoordinator: MainRoutable {
+    func openDetails(for cardModel: CardViewModel) {
+        let dismissAction: Action = { [weak self] in
+            self?.detailsCoordinator = nil
+        }
+
+        let coordinator = DetailsCoordinator(dismissAction: dismissAction, popToRootAction: popToRootAction)
+        let options = DetailsCoordinator.Options(cardModel: cardModel)
+        coordinator.start(with: options)
+        coordinator.popToRootAction = popToRootAction
+        detailsCoordinator = coordinator
+    }
+}

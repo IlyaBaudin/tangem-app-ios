@@ -24,7 +24,10 @@ struct MainCoordinatorView: CoordinatorView {
 
     @ViewBuilder
     private var links: some View {
-        EmptyView()
+        NavHolder()
+            .navigation(item: $coordinator.detailsCoordinator) {
+                DetailsCoordinatorView(coordinator: $0)
+            }
     }
 
     @ViewBuilder

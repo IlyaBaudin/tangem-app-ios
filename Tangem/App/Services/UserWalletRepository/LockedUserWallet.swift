@@ -11,8 +11,8 @@ import Combine
 import BlockchainSdk
 
 class LockedUserWallet: UserWalletModel {
-    let walletModelsManager: WalletModelsManager = WalletModelsManagerMock()
-    let userTokenListManager: UserTokenListManager = UserTokenListManagerMock()
+    let walletModelsManager: WalletModelsManager = LockedWalletModelsManager()
+    let userTokenListManager: UserTokenListManager = LockedUserTokenListManager()
 
     var signer: TangemSigner
 

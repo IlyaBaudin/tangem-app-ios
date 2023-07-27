@@ -8,4 +8,6 @@
 
 import Foundation
 
-protocol MainRoutable: AnyObject {}
+protocol MainRoutable: AnyObject {
+    func openDetails(for cardModel: CardViewModel)
+}

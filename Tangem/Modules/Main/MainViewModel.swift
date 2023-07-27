@@ -56,7 +56,7 @@ final class MainViewModel: ObservableObject {
 
         pages = mainPageContentFactory.createPages(from: userWalletRepository.models)
 
-        disableHorizontalScrollIfNeeded()
+        setupHorizontalScrollAvailability()
     }
 
     convenience init(
@@ -73,22 +73,36 @@ final class MainViewModel: ObservableObject {
 
     func scanNewCard() {}
 
-    func openDetails() {}
+    func openDetails() {
+        // TODO: Refactor navigation to UserWalletModel instead of CardViewModel
+        guard let cardViewModel = userWalletRepository.models[selectedCardIndex] as? CardViewModel else {
+            AppLog.shared.debug("[Main v2] failed to cast user wallet model to CardViewModel")
+            return
+        }
+
+        coordinator?.openDetails(for: cardViewModel)
+    }
 
     func onPullToRefresh(completionHandler: @escaping RefreshCompletionHandler) {
+        isHorizontalScrollDisabled = true
+        let completion = { [weak self] in
+            self?.setupHorizontalScrollAvailability()
+            completionHandler()
+        }
         let page = pages[selectedCardIndex]
         let model = userWalletRepository.models[selectedCardIndex]
+
         switch page {
         case .singleWallet:
-            model.walletModelsManager.updateAll(silent: false, completion: completionHandler)
+            model.walletModelsManager.updateAll(silent: false, completion: completion)
         case .multiWallet:
             model.userTokenListManager.updateLocalRepositoryFromServer { _ in
-                model.walletModelsManager.updateAll(silent: true, completion: completionHandler)
+                model.walletModelsManager.updateAll(silent: true, completion: completion)
             }
         }
     }
 
-    private func disableHorizontalScrollIfNeeded() {
+    private func setupHorizontalScrollAvailability() {
         isHorizontalScrollDisabled = pages.count <= 1
     }
 
