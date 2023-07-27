@@ -452,8 +452,6 @@ class CommonUserWalletRepository: UserWalletRepository {
                     if case .success(let cardModel) = result {
                         cardModel.initialUpdate()
                     }
-                    save(cardModel.userWallet)
-                    setSelectedUserWalletId(cardModel.userWalletId.value, reason: .userSelected)
                     completion(result)
                     return
                 }
