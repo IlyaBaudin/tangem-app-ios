@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import BlockchainSdk
+import CombineExt
 
 class LockedUserWallet: UserWalletModel {
     let walletModelsManager: WalletModelsManager = LockedWalletModelsManager()
@@ -24,7 +25,7 @@ class LockedUserWallet: UserWalletModel {
 
     var userWalletId: UserWalletId { .init(value: userWallet.userWalletId) }
 
-    var updatePublisher: AnyPublisher<Void, Never> { PassthroughSubject().eraseToAnyPublisher() }
+    var updatePublisher: AnyPublisher<Void, Never> { .just }
 
     private(set) var userWallet: UserWallet
 
@@ -43,12 +44,14 @@ class LockedUserWallet: UserWalletModel {
     func initialUpdate() {}
 
     func updateWalletName(_ name: String) {
-        userWallet.name = name
+        cardNameSubject.send(name)
     }
 
     func updateWalletModels() {}
 
-    func updateAndReloadWalletModels(silent: Bool, completion: @escaping () -> Void) {}
+    func updateAndReloadWalletModels(silent: Bool, completion: @escaping () -> Void) {
+        completion()
+    }
 
     func totalBalancePublisher() -> AnyPublisher<LoadingValue<TotalBalanceProvider.TotalBalance>, Never> {
         .just(output: .loaded(.init(balance: 0, currencyCode: "", hasError: false)))
@@ -60,28 +63,6 @@ class LockedUserWallet: UserWalletModel {
                 self?.userWallet.name = newName
             }
             .store(in: &bag)
-    }
-}
-
-extension LockedUserWallet {
-    struct DummyUserTokenListManager: UserTokenListManager {
-        var userTokens: [StorageEntry] { [] }
-
-        var userTokensPublisher: AnyPublisher<[StorageEntry], Never> { .just(output: []) }
-
-        func update(_ type: CommonUserTokenListManager.UpdateType, shouldUpload: Bool) {}
-
-        func upload() {}
-
-        func updateLocalRepositoryFromServer(result: @escaping (Result<Void, Error>) -> Void) {
-            result(.success(()))
-        }
-    }
-
-    struct DummyTotalBalanceProvider: TotalBalanceProviding {
-        func totalBalancePublisher() -> AnyPublisher<LoadingValue<TotalBalanceProvider.TotalBalance>, Never> {
-            Empty().eraseToAnyPublisher()
-        }
     }
 }
 
