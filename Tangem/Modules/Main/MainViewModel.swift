@@ -46,6 +46,8 @@ final class MainViewModel: ObservableObject {
 
     private var bag = Set<AnyCancellable>()
 
+    // MARK: - Initializers
+
     init(
         coordinator: MainRoutable,
         userWalletRepository: UserWalletRepository,
@@ -80,6 +82,8 @@ final class MainViewModel: ObservableObject {
         self.init(userWalletModel: cardViewModel, coordinator: coordinator, userWalletRepository: userWalletRepository, mainPageContentFactory: mainPageContentFactory)
     }
 
+    // MARK: - Internal functions
+
     func scanNewCard() {}
 
     func openDetails() {
@@ -110,6 +114,8 @@ final class MainViewModel: ObservableObject {
             }
         }
     }
+
+    // MARK: - Private functions
 
     private func setupHorizontalScrollAvailability() {
         isHorizontalScrollDisabled = pages.count <= 1
