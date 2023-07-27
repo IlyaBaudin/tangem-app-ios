@@ -10,8 +10,8 @@ import Foundation
 import SwiftUI
 
 enum CardMainPageBuilder: Identifiable {
-    case singleWallet(id: String, headerModel: MultiWalletCardHeaderViewModel, bodyModel: SingleWalletContentCoordinator)
-    case multiWallet(id: String, headerModel: MultiWalletCardHeaderViewModel, bodyModel: MultiWalletContentCoordinator)
+    case singleWallet(id: String, headerModel: CardHeaderViewModel, bodyModel: SingleWalletContentCoordinator)
+    case multiWallet(id: String, headerModel: CardHeaderViewModel, bodyModel: MultiWalletContentCoordinator)
 
     var id: String {
         switch self {
@@ -26,9 +26,9 @@ enum CardMainPageBuilder: Identifiable {
     var header: some View {
         switch self {
         case .singleWallet(_, let headerModel, _):
-            MultiWalletCardHeaderView(viewModel: headerModel)
+            CardHeaderView(viewModel: headerModel)
         case .multiWallet(_, let headerModel, _):
-            MultiWalletCardHeaderView(viewModel: headerModel)
+            CardHeaderView(viewModel: headerModel)
         }
     }
 

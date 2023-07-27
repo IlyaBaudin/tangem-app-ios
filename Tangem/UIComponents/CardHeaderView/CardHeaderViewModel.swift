@@ -1,5 +1,5 @@
 //
-//  MultiWalletCardHeaderViewModel.swift
+//  CardHeaderViewModel.swift
 //  Tangem
 //
 //  Created by Andrew Son on 10/05/23.
@@ -10,7 +10,7 @@ import Foundation
 import Combine
 import CombineExt
 
-final class MultiWalletCardHeaderViewModel: ObservableObject {
+final class CardHeaderViewModel: ObservableObject {
     let cardImage: ImageType?
     let isCardLocked: Bool
 

@@ -21,7 +21,7 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
             if $0.isMultiWallet {
                 let coordinator = MultiWalletContentCoordinator()
                 coordinator.start(with: .init())
-                let header = MultiWalletCardHeaderViewModel(
+                let header = CardHeaderViewModel(
                     cardInfoProvider: $0,
                     cardSubtitleProvider: subtitleProvider,
                     balanceProvider: $0
@@ -36,7 +36,7 @@ struct CommonMainPageContentFactory: MainPageContentFactory {
 
             let coordinator = SingleWalletContentCoordinator()
             coordinator.start(with: .init())
-            let header = MultiWalletCardHeaderViewModel(
+            let header = CardHeaderViewModel(
                 cardInfoProvider: $0,
                 cardSubtitleProvider: subtitleProvider,
                 balanceProvider: $0

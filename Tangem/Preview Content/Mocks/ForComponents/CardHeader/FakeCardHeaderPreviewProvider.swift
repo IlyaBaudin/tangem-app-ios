@@ -10,7 +10,7 @@ import Foundation
 import Combine
 
 final class FakeCardHeaderPreviewProvider: ObservableObject {
-    @Published var models: [MultiWalletCardHeaderViewModel] = []
+    @Published var models: [CardHeaderViewModel] = []
 
     let infoProviders: [Provider] = [
         Provider(

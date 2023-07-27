@@ -1,5 +1,5 @@
 //
-//  MultiWalletCardHeaderView.swift
+//  CardHeaderView.swift
 //  Tangem
 //
 //  Created by Andrew Son on 10/05/23.
@@ -8,8 +8,8 @@
 
 import SwiftUI
 
-struct MultiWalletCardHeaderView: View {
-    @ObservedObject var viewModel: MultiWalletCardHeaderViewModel
+struct CardHeaderView: View {
+    @ObservedObject var viewModel: CardHeaderViewModel
 
     private let imageSize: CGSize = .init(width: 120, height: 106)
     private let horizontalSpacing: CGFloat = 6
@@ -95,7 +95,7 @@ struct CardHeaderView_Previews: PreviewProvider {
                         provider.models.indices,
                         id: \.self,
                         content: { index in
-                            MultiWalletCardHeaderView(viewModel: provider.models[index])
+                            CardHeaderView(viewModel: provider.models[index])
                                 .onTapGesture {
                                     let provider = provider.infoProviders[index]
                                     provider.tapAction(provider)
