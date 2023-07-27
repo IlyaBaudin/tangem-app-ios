@@ -8,8 +8,6 @@
 
 import Foundation
 import Combine
-import BlockchainSdk
-import CombineExt
 
 class LockedUserWallet: UserWalletModel {
     let walletModelsManager: WalletModelsManager = LockedWalletModelsManager()
