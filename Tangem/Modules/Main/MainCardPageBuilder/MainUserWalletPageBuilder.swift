@@ -37,8 +37,10 @@ enum MainUserWalletPageBuilder: Identifiable {
         switch self {
         case .singleWallet(_, _, let bodyModel):
             SingleWalletMainContentView(viewModel: bodyModel)
+                .id(id)
         case .multiWallet(_, _, let bodyModel):
             MultiWalletMainContentView(viewModel: bodyModel)
+                .id(id)
         }
     }
 }

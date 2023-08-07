@@ -38,6 +38,8 @@ class UserWalletModelMock: UserWalletModel {
         UserWallet(userWalletId: Data(), name: "", card: .init(card: .walletWithBackup), associatedCardIds: [], walletData: .none, artwork: nil, isHDWalletAllowed: false)
     }
 
+    var config: UserWalletConfig { UserWalletConfigFactory(userWallet.cardInfo()).makeConfig() }
+
     var updatePublisher: AnyPublisher<Void, Never> { .just }
     var didPerformInitialTokenSyncPublisher: AnyPublisher<Bool, Never> { .just(output: true) }
 

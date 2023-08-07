@@ -11,6 +11,7 @@ import Combine
 
 protocol UserWalletModel: MainHeaderInfoProvider, TotalBalanceProviding, MultiWalletMainHeaderSubtitleDataSource, AnyObject {
     var isMultiWallet: Bool { get }
+    var config: UserWalletConfig { get }
     var tokensCount: Int? { get }
     var config: UserWalletConfig { get }
     var userWalletId: UserWalletId { get }

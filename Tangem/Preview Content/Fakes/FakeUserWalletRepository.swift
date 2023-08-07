@@ -31,8 +31,8 @@ class FakeUserWalletRepository: UserWalletRepository {
 
     private let eventSubject = PassthroughSubject<UserWalletRepositoryEvent, Never>()
 
-    init() {
-        models = FakeUserWalletModel.allFakeWalletModels
+    init(models: [UserWalletModel] = FakeUserWalletModel.allFakeWalletModels) {
+        self.models = models
     }
 
     func unlock(with method: UserWalletRepositoryUnlockMethod, completion: @escaping (UserWalletRepositoryResult?) -> Void) {}

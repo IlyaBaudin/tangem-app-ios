@@ -16,6 +16,7 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
     let userTokensManager: UserTokensManager
     let totalBalanceProvider: TotalBalanceProviding
     let signer: TangemSigner = .init(with: "", sdk: .init())
+    let config: UserWalletConfig
 
     let config: UserWalletConfig
     let userWallet: UserWallet
@@ -53,6 +54,7 @@ class FakeUserWalletModel: UserWalletModel, ObservableObject {
         self.userWalletId = userWalletId
         config = UserWalletConfigFactory(userWallet.cardInfo()).makeConfig()
         _userWalletNamePublisher = .init(userWalletName)
+        config = UserWalletConfigFactory(userWallet.cardInfo()).makeConfig()
 
         walletModelsManager = FakeWalletModelsManager(walletManagers: walletManagers)
         userTokenListManager = FakeUserTokenListManager()
