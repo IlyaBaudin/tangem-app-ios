@@ -17,7 +17,8 @@ class CombinedExchangeService {
     private let utorgService: UtorgService?
 
     init(mercuryoService: MercuryoService, utorgService: UtorgService?, sellService: ExchangeService) {
-        buyService = mercuryoService
+//        buyService = mercuryoService
+        buyService = sellService
         self.mercuryoService = mercuryoService
         self.utorgService = utorgService
         self.sellService = sellService
