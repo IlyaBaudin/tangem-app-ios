@@ -75,9 +75,9 @@ extension AppEnvironment {
     }
 
     var configFileName: String {
-        if isDebug {
-            return "config_dev"
-        }
+//        if isDebug {
+//            return "config_dev"
+//        }
 
         switch self {
         case .production:
