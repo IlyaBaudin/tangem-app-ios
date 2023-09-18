@@ -9,18 +9,26 @@
 import Foundation
 import SwiftUI
 
+private var index2: Int = 0
+
 struct ScrollViewRepresentable<Content: View>: UIViewRepresentable {
     private weak var delegate: ScrollViewRepresentableDelegate?
-    private let content: () -> Content
+    private let content: Content
 
+    @Binding var contentSize: CGSize
     private var isScrollDisabled: Bool = false
 
     init(
         delegate: ScrollViewRepresentableDelegate,
-        content: @escaping () -> Content
+        contentSize: Binding<CGSize>,
+        content: Content
     ) {
         self.delegate = delegate
+        _contentSize = contentSize
         self.content = content
+
+//        index2 += 1
+//        print("init ScrollViewRepresentable", index2, self.contentSize)
     }
 
     func makeUIView(context: Context) -> UIScrollView {
@@ -38,7 +46,7 @@ struct ScrollViewRepresentable<Content: View>: UIViewRepresentable {
         }
 
         scrollView.addSubview(contentView)
-        scrollView.contentSize = context.coordinator.contentSize()
+        scrollView.contentSize = contentSize // context.coordinator.contentSize()
 
         let gesture = UIPanGestureRecognizer(
             target: context.coordinator,
@@ -53,12 +61,19 @@ struct ScrollViewRepresentable<Content: View>: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIScrollView, context: Context) {
         uiView.isScrollEnabled = !isScrollDisabled
+//        print("updateUIView", context.transaction)
+//        guard !uiView.isDragging else { return }
 
         let hostingController = context.coordinator.hostingController
         // Use it for handle SwiftUI view updating
-        hostingController.rootView = content()
+        hostingController.rootView = content
 
-        uiView.contentSize = context.coordinator.contentSize()
+        let screenSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        let contentSize = contentSize == .zero ? screenSize : contentSize
+        // hostingController.sizeThatFits(in: screenSize)
+
+        hostingController.view.frame = CGRect(origin: .zero, size: contentSize)
+        uiView.contentSize = contentSize // context.coordinator.contentSize()
 
         if let safeAreaInsets = delegate?.getSafeAreaInsets() {
             uiView.contentInset = safeAreaInsets
@@ -68,7 +83,7 @@ struct ScrollViewRepresentable<Content: View>: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
-            hostingController: UIHostingController(rootView: content()),
+            hostingController: UIHostingController(rootView: content),
             delegate: delegate
         )
     }
@@ -77,6 +92,7 @@ struct ScrollViewRepresentable<Content: View>: UIViewRepresentable {
 // MARK: - ScrollViewRepresentableDelegate
 
 protocol ScrollViewRepresentableDelegate: AnyObject {
+    func getContentSize() -> CGSize
     func getSafeAreaInsets() -> UIEdgeInsets
 
     func contentOffsetDidChanged(contentOffset: CGPoint)
@@ -109,20 +125,20 @@ extension ScrollViewRepresentable {
             self.delegate = delegate
         }
 
-        func contentSize() -> CGSize {
-            guard let contentView = hostingController.view else {
-                assertionFailure("HostingController haven't rootView")
-                return .zero
-            }
-
-            let screenSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-            let contentSize = contentView.sizeThatFits(screenSize)
-
-            // Update size inside contentView
-            contentView.frame = CGRect(origin: .zero, size: contentSize)
-
-            return contentSize
-        }
+//        func contentSize() -> CGSize {
+//            guard let contentView = hostingController.view else {
+//                assertionFailure("HostingController haven't rootView")
+//                return .zero
+//            }
+//
+//            let screenSize = CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+//            let contentSize = hostingController.sizeThatFits(in: screenSize)
+//
+//            // Update size inside contentView
+//            contentView.frame = CGRect(origin: .zero, size: contentSize)
+//
+//            return contentSize
+//        }
 
         // MARK: - UIScrollViewDelegate
 

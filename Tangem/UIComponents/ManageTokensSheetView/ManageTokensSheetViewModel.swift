@@ -24,8 +24,8 @@ class ManageTokensSheetViewModel: ObservableObject {
 
     init() {
         DispatchQueue.global().async {
-            let items: [String] = (0 ..< 100).reduce(into: []) { result, _ in
-                result.append(Int.random(in: 1_000 ... 1_000_000).description)
+            let items: [String] = (0 ..< 10).reduce(into: []) { result, _ in
+                result.append(UUID().uuidString) //  Int.random(in: 1_000 ... 1_000_000).description
             }
 
             DispatchQueue.main.async {

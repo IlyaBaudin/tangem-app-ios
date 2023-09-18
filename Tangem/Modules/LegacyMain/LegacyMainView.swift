@@ -14,7 +14,21 @@ import Combine
 import MessageUI
 
 struct LegacyMainView: View {
+    internal init(
+        viewModel: LegacyMainViewModel,
+        manageTokensSheetViewModel: ManageTokensSheetViewModel = ManageTokensSheetViewModel(),
+        stateObject: BottomScrollableSheetStateObject = BottomScrollableSheetStateObject()
+    ) {
+        self.viewModel = viewModel
+        self.manageTokensSheetViewModel = manageTokensSheetViewModel
+        self.stateObject = stateObject
+    }
+
     @ObservedObject var viewModel: LegacyMainViewModel
+    @ObservedObject
+    private var manageTokensSheetViewModel = ManageTokensSheetViewModel()
+    @ObservedObject
+    private var stateObject = BottomScrollableSheetStateObject()
 
     var body: some View {
         GeometryReader { geometry in
@@ -65,6 +79,7 @@ struct LegacyMainView: View {
                 }
             }
         }
+        .manageTokens(viewModel: manageTokensSheetViewModel, stateObject: stateObject)
         .navigationBarBackButtonHidden(true) // Remove default back button. Because we don't have back transition. Has no effect on iOS13.
         .navigationBarTitle(Text(Localization.walletTitle), displayMode: .inline)
         .navigationBarItems(

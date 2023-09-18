@@ -14,6 +14,7 @@ public class BottomScrollableSheetStateObject: ObservableObject {
     @Published var visibleHeight: CGFloat = 0
     @Published var scrollViewIsDragging: Bool = false
     @Published var headerSize: CGFloat = 100
+    @Published var contentSize: CGSize = .zero
 
     var geometryInfo: GeometryInfo = .init()
 
@@ -25,7 +26,7 @@ public class BottomScrollableSheetStateObject: ObservableObject {
 
     private var state: SheetState = .bottom
     private var contentOffset: CGPoint = .zero
-    private var keyboardCancellable: AnyCancellable?
+    private var bag: Set<AnyCancellable> = []
 
     public init() {
         bindKeyboard()
@@ -116,12 +117,21 @@ public class BottomScrollableSheetStateObject: ObservableObject {
     }
 
     private func bindKeyboard() {
-        keyboardCancellable = NotificationCenter
+        NotificationCenter
             .default
             .publisher(for: UIResponder.keyboardWillShowNotification)
             .sink { [weak self] _ in
                 self?.updateToState(.top)
             }
+            .store(in: &bag)
+
+        NotificationCenter
+            .default
+            .publisher(for: UIApplication.didEnterBackgroundNotification)
+            .sink { [weak self] _ in
+                self?.updateToState(self?.state ?? .bottom)
+            }
+            .store(in: &bag)
     }
 
     private func dragView(translation: CGFloat) {
@@ -146,6 +156,10 @@ public class BottomScrollableSheetStateObject: ObservableObject {
 }
 
 extension BottomScrollableSheetStateObject: ScrollViewRepresentableDelegate {
+    func getContentSize() -> CGSize {
+        return contentSize
+    }
+
     func getSafeAreaInsets() -> UIEdgeInsets {
         UIEdgeInsets(
             top: .zero,
@@ -193,6 +207,10 @@ extension BottomScrollableSheetStateObject {
     struct GeometryInfo: Equatable {
         let size: CGSize
         let safeAreaInsets: EdgeInsets
+
+        var height: CGFloat {
+            size.height + safeAreaInsets.top + safeAreaInsets.bottom
+        }
 
         init(size: CGSize = .zero, safeAreaInsets: EdgeInsets = .init()) {
             self.size = size

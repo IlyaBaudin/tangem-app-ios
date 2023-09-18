@@ -8,12 +8,15 @@
 
 import SwiftUI
 
+private var indexD = 0
 struct DefaultRowView: View {
     // TODO: Make @ObservedObject
     private let viewModel: DefaultRowViewModel
 
     init(viewModel: DefaultRowViewModel) {
         self.viewModel = viewModel
+
+        print("init TestText index \(indexD), text: \(viewModel.hashValue)")
     }
 
     private var isTappable: Bool { viewModel.action != nil }

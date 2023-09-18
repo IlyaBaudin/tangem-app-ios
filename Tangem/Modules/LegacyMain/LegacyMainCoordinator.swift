@@ -19,6 +19,7 @@ class LegacyMainCoordinator: CoordinatorObject {
     // MARK: - Main view model
 
     @Published private(set) var mainViewModel: LegacyMainViewModel? = nil
+    @Published private(set) var manageTokensSheetViewModel: ManageTokensSheetViewModel? = nil
 
     // MARK: - Child coordinators
 

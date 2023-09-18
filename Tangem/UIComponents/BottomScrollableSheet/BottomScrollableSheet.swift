@@ -11,20 +11,20 @@ import Combine
 
 struct BottomScrollableSheet<Header: View, Content: View>: View {
     @ObservedObject private var stateObject: BottomScrollableSheetStateObject
-    @ViewBuilder private let header: () -> Header
-    @ViewBuilder private let content: () -> Content
+    @ViewBuilder private let header: Header
+    @ViewBuilder private let content: Content
 
     private let backgroundViewOpacity: CGFloat = 0.5
     private let indicatorSize = CGSize(width: 32, height: 4)
 
     init(
         stateObject: BottomScrollableSheetStateObject,
-        @ViewBuilder header: @escaping () -> Header,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder header: () -> Header,
+        @ViewBuilder content: () -> Content
     ) {
         self.stateObject = stateObject
-        self.header = header
-        self.content = content
+        self.header = header()
+        self.content = content()
     }
 
     var body: some View {
@@ -40,7 +40,6 @@ struct BottomScrollableSheet<Header: View, Content: View>: View {
                 alignment: .bottom
             )
             .ignoresSafeArea(.all, edges: .all)
-            .onAppear(perform: stateObject.onAppear)
             .preference(
                 key: BottomScrollableSheetStateObject.GeometryReaderPreferenceKey.self,
                 value: .init(size: proxy.size, safeAreaInsets: proxy.safeAreaInsets)
@@ -50,6 +49,7 @@ struct BottomScrollableSheet<Header: View, Content: View>: View {
             }
         }
         .ignoresSafeArea(.keyboard, edges: .all)
+        .onAppear(perform: stateObject.onAppear)
     }
 
     private var backgroundView: some View {
@@ -76,7 +76,7 @@ struct BottomScrollableSheet<Header: View, Content: View>: View {
         VStack(spacing: .zero) {
             indicator(proxy: proxy)
 
-            header()
+            header
         }
         .readGeometry(\.size.height, bindTo: $stateObject.headerSize)
         .gesture(dragGesture)
@@ -93,12 +93,16 @@ struct BottomScrollableSheet<Header: View, Content: View>: View {
     }
 
     private func scrollView(proxy: GeometryProxy) -> some View {
-        ScrollViewRepresentable(delegate: stateObject, content: content)
-            .isScrollDisabled(stateObject.scrollViewIsDragging)
+        ScrollViewRepresentable(
+            delegate: stateObject,
+            contentSize: $stateObject.contentSize,
+            content: content
+        )
+        .isScrollDisabled(stateObject.scrollViewIsDragging)
     }
 
     private var dragGesture: some Gesture {
-        DragGesture(minimumDistance: 10, coordinateSpace: .global)
+        DragGesture(minimumDistance: 0, coordinateSpace: .global)
             .onChanged { value in
                 stateObject.headerDragGesture(onChanged: value)
             }
