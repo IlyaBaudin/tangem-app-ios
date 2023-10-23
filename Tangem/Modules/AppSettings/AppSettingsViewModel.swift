@@ -48,6 +48,10 @@ class AppSettingsViewModel: ObservableObject {
     @AppStorageCompat(StorageType.selectedCurrencyCode)
     private var selectedCurrencyCode: String = "USD"
 
+    private var showingBiometryWarning: Bool {
+        warningViewModel != nil
+    }
+
     init(coordinator: AppSettingsRoutable) {
         self.coordinator = coordinator
 
@@ -121,6 +125,8 @@ private extension AppSettingsViewModel {
     }
 
     func setupView() {
+        let wasShowingBiometryWarning = showingBiometryWarning
+
         if isBiometryAvailable {
             warningViewModel = nil
         } else {
@@ -131,6 +137,11 @@ private extension AppSettingsViewModel {
             ) { [weak self] in
                 self?.openBiometrySettings()
             }
+        }
+
+        // Can't do this in onAppear, the view could be updated and the warning displayed after biometry disabled in the settings
+        if showingBiometryWarning, !wasShowingBiometryWarning {
+            Analytics.log(.settingsNoticeEnableBiometrics)
         }
 
         savingWalletViewModel = DefaultToggleRowViewModel(
@@ -184,7 +195,10 @@ private extension AppSettingsViewModel {
     func isSensitiveTextAvailability() -> BindingValue<Bool> {
         BindingValue<Bool>(
             get: { AppSettings.shared.isHidingSensitiveAvailable },
-            set: { AppSettings.shared.isHidingSensitiveAvailable = $0 }
+            set: { enabled in
+                Analytics.log(.hideBalanceChanged, params: [.state: Analytics.ParameterValue.toggleState(for: enabled)])
+                AppSettings.shared.isHidingSensitiveAvailable = enabled
+            }
         )
     }
 
