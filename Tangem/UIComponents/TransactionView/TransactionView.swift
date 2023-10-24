@@ -41,6 +41,7 @@ struct TransactionView: View {
                     Text(viewModel.localizeDestination)
                         .style(Fonts.Regular.footnote, color: Colors.Text.tertiary)
                         .lineLimit(1)
+                        .multilineTextAlignment(.leading)
                         .truncationMode(.middle)
 
                     Spacer()
