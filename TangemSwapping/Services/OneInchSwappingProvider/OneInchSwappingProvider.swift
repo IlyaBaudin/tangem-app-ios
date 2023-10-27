@@ -65,7 +65,7 @@ extension OneInchSwappingProvider: SwappingProvider {
         }
     }
 
-    func fetchSpenderAddress(for blockchain: SwappingBlockchain) async throws -> String {
+    public func fetchSpenderAddress(for blockchain: SwappingBlockchain) async throws -> String {
         let spender = await oneInchAPIProvider.spender(blockchain: blockchain)
 
         switch spender {

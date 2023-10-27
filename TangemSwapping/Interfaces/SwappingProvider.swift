@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol SwappingProvider {
+public protocol SwappingProvider {
     func fetchQuote(items: SwappingItems, amount: String, referrer: SwappingReferrerAccount?) async throws -> SwappingQuoteDataModel
     func fetchSwappingData(
         items: SwappingItems,

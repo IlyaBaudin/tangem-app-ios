@@ -10,7 +10,7 @@ import Foundation
 import BlockchainSdk
 import struct TangemSdk.DerivationPath
 
-enum TokenItem: Hashable {
+public enum TokenItem: Hashable {
     case blockchain(Blockchain)
     case token(Token, Blockchain)
 
@@ -87,6 +87,15 @@ enum TokenItem: Hashable {
             return blockchain.tokenTypeName
         case .blockchain:
             return "MAIN"
+        }
+    }
+
+    var decimalCount: Int {
+        switch self {
+        case .token(let token, _):
+            return token.decimalCount
+        case .blockchain(let blockchain):
+            return blockchain.decimalCount
         }
     }
 

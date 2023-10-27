@@ -150,6 +150,13 @@ struct NotificationView_Previews: PreviewProvider {
                     dismissAction: nil
                 )
             ),
+            .init(
+                style: .plain,
+                settings: NotificationView.Settings(
+                    event: PermissionNeeded(),
+                    dismissAction: nil
+                )
+            ),
         ]
 
         @Published var notifications: [NotificationViewInput] = []
@@ -202,4 +209,18 @@ struct NotificationView_Previews: PreviewProvider {
     static var previews: some View {
         Preview()
     }
+}
+
+struct PermissionNeeded: NotificationEvent {
+    var title: String { "Permission needed" }
+
+    var description: String? { "To continue you need to allow 1inch smart contracts to use your Dai" }
+
+    var colorScheme: NotificationView.ColorScheme { .secondary }
+
+    var icon: NotificationView.MessageIcon {
+        .init(image: Assets.swapLock.image, color: Colors.Icon.primary1)
+    }
+
+    var isDismissable: Bool { false }
 }

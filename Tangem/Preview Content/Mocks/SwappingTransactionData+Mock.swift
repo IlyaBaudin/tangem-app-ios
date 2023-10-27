@@ -20,7 +20,7 @@ extension SwappingTransactionData {
         sourceAmount: 123_000_000_000_000,
         destinationAmount: 300_000_000_000_000,
         value: 0,
-        gas: EthereumGasDataModel(
+        gas: TangemSwapping.EthereumGasDataModel(
             blockchain: .ethereum,
             gasPrice: 1_000_000_000,
             gasLimit: 310_000,
