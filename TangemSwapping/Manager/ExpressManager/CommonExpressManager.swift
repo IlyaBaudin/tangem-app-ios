@@ -18,7 +18,6 @@ class CommonExpressManager {
 
     private let expressAPIProvider: ExpressAPIProvider
     private let allowanceProvider: AllowanceProvider
-    private let expressPendingTransactionRepository: ExpressPendingTransactionRepository
     private let logger: SwappingLogger
 
     // MARK: - State
@@ -41,12 +40,10 @@ class CommonExpressManager {
     init(
         expressAPIProvider: ExpressAPIProvider,
         allowanceProvider: AllowanceProvider,
-        expressPendingTransactionRepository: ExpressPendingTransactionRepository,
         logger: SwappingLogger
     ) {
         self.expressAPIProvider = expressAPIProvider
         self.allowanceProvider = allowanceProvider
-        self.expressPendingTransactionRepository = expressPendingTransactionRepository
         self.logger = logger
     }
 }
@@ -306,7 +303,7 @@ private extension CommonExpressManager {
         if let minAmount = quote.quote?.minAmount, request.amount < minAmount {
             return .tooMinimalAmount(minAmount)
         }
-        
+
         // 2. Check Permission
 
         if let spender = quote.quote?.allowanceContract {
@@ -317,15 +314,7 @@ private extension CommonExpressManager {
             }
         }
 
-        // 3. Check Pending
-
-        let hasPendingTransaction = expressPendingTransactionRepository.hasPending(for: request.pair.source.currency.network)
-
-        if hasPendingTransaction {
-            return .hasPendingTransaction
-        }
-
-        // 4. Check Balance
+        // 3. Check Balance
 
         let sourceBalance = try await request.pair.source.getBalance()
         let isNotEnoughAmountForSwapping = request.amount > sourceBalance

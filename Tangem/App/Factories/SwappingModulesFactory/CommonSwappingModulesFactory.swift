@@ -11,6 +11,8 @@ import TangemSwapping
 import BlockchainSdk
 
 class CommonSwappingModulesFactory {
+    @Injected(\.keysManager) private var keysManager: KeysManager
+
     private let userTokensManager: UserTokensManager
     private let walletModel: WalletModel
     private let signer: TransactionSigner
@@ -157,6 +159,17 @@ private extension CommonSwappingModulesFactory {
         )
     }
 
+    var allowanceProvider: AllowanceProvider {
+        CommonAllowanceProvider(
+            ethereumNetworkProvider: ethereumNetworkProvider,
+            ethereumTransactionProcessor: ethereumTransactionProcessor
+        )
+    }
+
+    var pendingTransactionRepository: ExpressPendingTransactionRepository {
+        CommonExpressPendingTransactionRepository()
+    }
+
     var swappingInteractor: SwappingInteractor {
         if let interactor = _swappingInteractor {
             return interactor
@@ -178,6 +191,33 @@ private extension CommonSwappingModulesFactory {
         )
 
         _swappingInteractor = interactor
+        return interactor
+    }
+
+    var expressInteractor: ExpressInteractor {
+        if let interactor = _expressInteractor {
+            return interactor
+        }
+
+        let factory = TangemSwappingFactory()
+        let credential = ExpressAPICredential(apiKey: "", userId: "", sessionId: "")
+        let provider = factory.makeExpressAPIProvider(credential: credential, configuration: .defaultConfiguration)
+
+        let expressManager = factory.makeExpressManager(
+            expressAPIProvider: provider,
+            allowanceProvider: allowanceProvider,
+            logger: logger
+        )
+
+        let interactor = ExpressInteractor(
+            sender: walletModel,
+            expressManager: expressManager,
+            allowanceProvider: allowanceProvider,
+            expressPendingTransactionRepository: pendingTransactionRepository,
+            logger: logger
+        )
+
+        _expressInteractor = interactor
         return interactor
     }
 }
